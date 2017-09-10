@@ -6,8 +6,8 @@
     "main": "app/server.js",
     "scripts": {
       "start": "node server/app/index.js",
-      "compile-server": "node_modules/typescript/bin/tsc --listFiles server/src/**.ts --outDir server/app",
-      "compile-client": "node_modules/typescript/bin/tsc client/src/**.ts"
+      "compile-server": "node_modules/typescript/bin/tsc --project server",
+      "compile-client": "node_modules/typescript/bin/tsc --project client"
     },
     "dependencies": {
       "express": "^4.13.3",
