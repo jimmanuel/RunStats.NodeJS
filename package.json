@@ -2,14 +2,17 @@
     "name": "nodejs_web_app",
     "version": "1.0.0",
     "description": "Node.js",
-    "author": "Me",
+    "author": "James LaBar",
     "main": "app/server.js",
     "scripts": {
       "start": "node server/app/index.js",
+      "eslint-server":"node_modules/.bin/eslint -c server/eslintrc.yaml",
+      "eslint-client":"node_modules/.bin/eslint -c client/eslintrc.yaml",
       "compile-server": "node_modules/typescript/bin/tsc --project server",
       "compile-client": "node_modules/typescript/bin/tsc --project client"
     },
     "dependencies": {
+      "eslint":"^4.6.1",
       "express": "^4.13.3",
       "mocha":"^3.5.1",
       "typescript":"^2.5.2",
