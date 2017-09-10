@@ -1,0 +1,14 @@
+{
+    "name": "nodejs_web_app",
+    "version": "1.0.0",
+    "description": "Node.js",
+    "author": "Me",
+    "main": "app/server.js",
+    "scripts": {
+      "start": "node app/server.js"
+    },
+    "dependencies": {
+      "express": "^4.13.3"
+    }
+  }
+  
