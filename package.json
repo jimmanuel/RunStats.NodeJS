@@ -5,10 +5,15 @@
     "author": "Me",
     "main": "app/server.js",
     "scripts": {
-      "start": "node app/server.js"
+      "start": "node server/app/index.js",
+      "compile-server": "node_modules/typescript/bin/tsc --listFiles server/src/**.ts --outDir server/app",
+      "compile-client": "node_modules/typescript/bin/tsc client/src/**.ts"
     },
     "dependencies": {
-      "express": "^4.13.3"
+      "express": "^4.13.3",
+      "mocha":"^3.5.1",
+      "typescript":"^2.5.2",
+      "typescript-eslint-parser": "^8.0.0"
     }
   }
   
