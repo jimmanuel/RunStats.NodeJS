@@ -5,5 +5,4 @@ CREATE TABLE DataPointInstance (
     Latitude float not null,
     Longitude float not null
 );
-
-go;
+go

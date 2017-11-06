@@ -5,4 +5,4 @@ create table ActivityInstance (
     DurationSeconds int not null,
     StartTime datetime2 not null
 );
-go;
+go

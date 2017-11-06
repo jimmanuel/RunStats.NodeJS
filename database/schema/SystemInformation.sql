@@ -3,3 +3,4 @@ create table SystemInformation (
     SchemaVersion nvarchar(max) not null,
     LastUpdatedDate datetime2 not null constraint  [df_SystemInformation_LastUpdatedDate] default (sysutcdatetime())
 );
+GO
