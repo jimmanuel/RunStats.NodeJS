@@ -1,0 +1,1 @@
+{"version":3,"file":"DataPoint.js","sourceRoot":"","sources":["../../src/domain/DataPoint.ts"],"names":[],"mappings":";;AAAA;IAMI,YACI,QAAgB,EAChB,SAAiB,EACjB,QAAgB,EAChB,SAAiB;QAEjB,IAAI,CAAC,QAAQ,GAAG,QAAQ,CAAC;QACzB,IAAI,CAAC,SAAS,GAAG,SAAS,CAAC;QAC3B,IAAI,CAAC,QAAQ,GAAG,QAAQ,CAAC;QACzB,IAAI,CAAC,SAAS,GAAG,SAAS,CAAC;IAC/B,CAAC;CACJ;AAjBD,8BAiBC"}
