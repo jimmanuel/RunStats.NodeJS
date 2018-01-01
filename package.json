@@ -9,14 +9,21 @@
     "eslint-server": "node_modules/.bin/eslint -c server/eslintrc.yaml",
     "eslint-client": "node_modules/.bin/eslint -c client/eslintrc.yaml",
     "compile-server": "node_modules/typescript/bin/tsc --project server",
-    "compile-client": "node_modules/typescript/bin/tsc --project client"
+    "compile-client": "node_modules/typescript/bin/tsc --project client",
+    "test-server": "node_modules/mocha/bin/mocha --project server -r ts-node/register server/test/**/*.spec.ts"
   },
   "dependencies": {
     "eslint": "^4.6.1",
     "express": "^4.13.3",
-    "mocha": "^3.5.1",
+    "fast-xml-parser": "^2.8.3",
     "tedious": "^2.1.1",
     "typescript": "^2.5.2",
     "typescript-eslint-parser": "^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^8.5.2",
+    "chai": "^4.1.2",
+    "mocha": "^3.5.3",
+    "ts-node": "^4.1.0"
   }
 }
