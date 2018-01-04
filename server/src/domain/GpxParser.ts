@@ -1,17 +1,13 @@
-import { fastXmlParser } from 'fast-xml-parser';
+import fastXmlParser = require('fast-xml-parser');
 import { RunActivity } from './RunActivity';
 import { DataPoint } from "./DataPoint";
+import { DateTimeHelper } from './DateTimeHelper';
 
 export class GpxParser {
 
-    static parseGpx(fileName: string, xmlData: string) : RunActivity {
-        if (fileName == null || fileName.length == 0 ) {
-            throw new Error("invalid input file name");
-        }
-        
-/*
-        let xmlParser = new fastXmlParser();
-        if (!xmlParser.validate(xmlData)) {
+    static parseGpx(xmlData: string) : RunActivity {
+
+        if (!fastXmlParser.validate(xmlData)) {
             throw new Error("invalid input file");
         }
 
@@ -28,11 +24,11 @@ export class GpxParser {
             arrayMode : false
         };
 
-        let tObj = xmlParser.getTraversalObj(xmlData,options);
-        let jsonObj = xmlParser.convertToJson(tObj);
+        let tObj = fastXmlParser.getTraversalObj(xmlData,options);
+        let jsonObj = fastXmlParser.convertToJson(tObj);
         
-        let startEpoch = jsonObj.trk.time;
-*/
-        return null;
+        let startEpoch = DateTimeHelper.convertToEpoch(jsonObj.gpx.trk.time);
+
+        return new RunActivity(startEpoch, 0, 0, null);
     }
 }
