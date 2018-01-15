@@ -18,7 +18,7 @@ describe('MathHelper', () => {
             expect(activity).to.not.equal(null, 'a valid activity should be returned');
             
             expect(activity.distanceMeters).to.equal(4659.543726307642, 'the distance should be correct');
-		});
+			});
 	  });
   });
 });

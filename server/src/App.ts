@@ -12,7 +12,7 @@ class App {
     const router = express.Router()
     router.get('/', (req, res) => {
       res.json({
-        message: 'Hello World from typescript!!!'
+        message: 'Hello World from typescript!!! [' + process.env.RUNSTATS_DB_CONNECTION_STRING + ']'
       })
     })
     this.express.use('/', router)

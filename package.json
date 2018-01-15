@@ -13,6 +13,7 @@
     "test-server": "node_modules/mocha/bin/mocha --project server -r ts-node/register server/test/**/*.spec.ts"
   },
   "dependencies": {
+    "dotenv": "^4.0.0",
     "eslint": "^4.6.1",
     "express": "^4.13.3",
     "moment": "^2.20.1",
