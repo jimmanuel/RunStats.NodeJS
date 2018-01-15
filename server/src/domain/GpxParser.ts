@@ -1,34 +1,35 @@
-import fastXmlParser = require('fast-xml-parser');
+//import xpath = require('xpath');
+//import * as x from 'xpath';
+//import dom = require('xmldom');
+import xml2js = require('xml2js');
 import { RunActivity } from './RunActivity';
 import { DataPoint } from "./DataPoint";
 import { DateTimeHelper } from './DateTimeHelper';
 
 export class GpxParser {
 
-    static parseGpx(xmlData: string) : RunActivity {
+    static parseGpx(xmlData: string, callback:(activity : RunActivity, error: Error) => void) : void {
 
-        if (!fastXmlParser.validate(xmlData)) {
-            throw new Error("invalid input file");
-        }
+        let parser = new xml2js.Parser();
 
-        let options = {
-            attrPrefix : "@_",
-            attrNodeName: false,
-            textNodeName : "#text",
-            ignoreNonTextNodeAttr : true,
-            ignoreTextNodeAttr : true,
-            ignoreNameSpace : true,
-            ignoreRootElement : false,
-            textNodeConversion : true,
-            textAttrConversion : false,
-            arrayMode : false
-        };
+        parser.parseString(xmlData, (err, result) => {
+            if (!(err === null)) {
+                callback(null, err);
+                return;
+            }
 
-        let tObj = fastXmlParser.getTraversalObj(xmlData,options);
-        let jsonObj = fastXmlParser.convertToJson(tObj);
-        
-        let startEpoch = DateTimeHelper.convertToEpoch(jsonObj.gpx.trk.time);
+            let timeValue = result.gpx.trk[0].time[0];
 
-        return new RunActivity(startEpoch, 0, 0, null);
+            let dataPoints : Array<DataPoint> = new Array();
+            let jsonPoints = result.gpx.trk[0].trkseg[0].trkpt;
+            for(let dataPointIndex = 0; dataPointIndex < jsonPoints.length; dataPointIndex++) {
+                let item = jsonPoints[dataPointIndex];
+                dataPoints.push(new DataPoint(item.$.lat, item.$.lon, item.ele[0], DateTimeHelper.convertToEpoch(item.time[0])));                
+            }
+
+            callback(
+                new RunActivity(DateTimeHelper.convertToEpoch(timeValue), dataPoints), 
+                null);
+        });
     }
 }

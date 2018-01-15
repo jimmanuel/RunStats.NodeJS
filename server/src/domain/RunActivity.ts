@@ -2,19 +2,24 @@ import { DataPoint } from './DataPoint';
 
 export class RunActivity {
 
+    distance: number;
+    duration: number;
     readonly epochStartTime: number;
-    readonly distanceMeters: number;
-    readonly durationSeconds: number;
     readonly dataPoints: Array<DataPoint>;
 
     constructor(    
         epochStartTime: number,
-        distanceMeters: number,
-        durationSeconds: number,
         dataPoints: Array<DataPoint>
     ) {
         this.epochStartTime = epochStartTime;
-        this.distanceMeters = distanceMeters;
-        this.dataPoints = dataPoints;
+        this.dataPoints = dataPoints.slice().sort(DataPoint.sortByTime);
+    }
+
+    getDistance() : number {
+        if (this.distance === null){
+            // math happens here    
+        }
+
+        return this.distance;
     }
 }

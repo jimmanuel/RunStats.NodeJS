@@ -15,4 +15,14 @@ export class DataPoint {
         this.altitude = altitude;
         this.epochTime = epochTime;
     }
+
+    static sortByTime(x: DataPoint, y: DataPoint) : number {
+        if (x.epochTime < y.epochTime) {
+            return -1;
+          }
+          if (x.epochTime > y.epochTime) {
+            return 1;
+          }
+          return 0;
+    }
 }
