@@ -1,6 +1,3 @@
-//import xpath = require('xpath');
-//import * as x from 'xpath';
-//import dom = require('xmldom');
 import xml2js = require('xml2js');
 import { RunActivity } from './RunActivity';
 import { DataPoint } from "./DataPoint";

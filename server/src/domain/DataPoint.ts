@@ -1,3 +1,5 @@
+import { MathHelper } from './MathHelper';
+
 export class DataPoint {
     readonly latitude: number;
     readonly longitude: number;
@@ -14,6 +16,10 @@ export class DataPoint {
         this.longitude = longitude;
         this.altitude = altitude;
         this.epochTime = epochTime;
+    }
+
+    calcuateDistanceTo(other : DataPoint) : number {
+        return MathHelper.calcuateDistance(this.latitude, this.longitude, other.latitude, other.longitude);
     }
 
     static sortByTime(x: DataPoint, y: DataPoint) : number {

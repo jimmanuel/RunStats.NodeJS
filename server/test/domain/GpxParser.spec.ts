@@ -45,7 +45,5 @@ describe('GpxParser', () => {
 			expect(activity.dataPoints[153].longitude).to.equal('-77.089452000', 'last longitude should be correct');
 		});
 	  });
-
-
   });
 });
