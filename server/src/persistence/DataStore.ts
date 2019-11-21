@@ -1,5 +1,3 @@
-import tedious = require('tedious');
-
 export interface IDataStore {
 
 }

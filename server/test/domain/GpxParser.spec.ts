@@ -10,7 +10,7 @@ describe('GpxParser', () => {
   describe("parseGpx", () => {
     it('should load file one correctly', (done) => {
 		setTimeout(done, 500);
-        let content = fs.readFileSync(__dirname + '/RK_gpx_2011-10-18_0635PM.gpx').toString();
+        let content = fs.readFileSync(__dirname + '/../../../test/res/RK_gpx_2011-10-18_0635PM.gpx').toString();
 		
         GpxParser.parseGpx(content, (activity : RunActivity, error : Error) => {
 			expect(error).to.be.equal(null, 'there should be no error generated');
@@ -23,7 +23,7 @@ describe('GpxParser', () => {
 	
       it('should load file two correctly', (done) => {
 		setTimeout(done, 500);
-        let content = fs.readFileSync(__dirname + '/RK_gpx _2012-04-26_0704.gpx').toString();
+        let content = fs.readFileSync(__dirname + '/../../../test/res/RK_gpx _2012-04-26_0704.gpx').toString();
 		
 		GpxParser.parseGpx(content, (activity : RunActivity, error : Error) => {
 			expect(error).to.equal(null, 'there should be no error generated');

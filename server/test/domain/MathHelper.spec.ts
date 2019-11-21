@@ -12,7 +12,7 @@ describe('MathHelper', () => {
   describe("calcuateDistance", () => {
 	  it('should calculate distance correctly', (done) => {
 		setTimeout(done, 500);
-        let content = fs.readFileSync(__dirname + '/RK_gpx _2012-04-26_0704.gpx').toString();
+        let content = fs.readFileSync(__dirname + '/../../../test/res/RK_gpx _2012-04-26_0704.gpx').toString();
 		GpxParser.parseGpx(content, (activity : RunActivity, error : Error) => {
 			expect(error).to.equal(null, 'there should be no error generated');
             expect(activity).to.not.equal(null, 'a valid activity should be returned');
