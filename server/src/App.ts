@@ -5,7 +5,6 @@ class App {
   public express;
   private readonly activityRouter : IActivityRouter;
 
-
   constructor () {
 
     this.activityRouter = new ActivityRouter();
@@ -16,8 +15,8 @@ class App {
 
   private mountRoutes (): void {
     const router = express.Router()
-    router.put('/api/activity', this.activityRouter.uploadActivity);
-    router.get('/api/activities', this.activityRouter.getAllActivities);
+    router.put('/api/activity', (req, res) => this.activityRouter.uploadActivity(req, res));
+    router.get('/api/activities', (req, res) => this.activityRouter.getAllActivities(req, res));
 
     router.get('/', (req, res) => {
       res.json({
