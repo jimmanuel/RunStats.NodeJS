@@ -16,15 +16,15 @@ class App {
 
   private mountRoutes (): void {
     const router = express.Router()
+    router.put('/api/activity', this.activityRouter.uploadActivity);
+    router.get('/api/activities', this.activityRouter.getAllActivities);
+
     router.get('/', (req, res) => {
       res.json({
         message: 'Hello World from typescript!!! [' + process.env.RUNSTATS_DB_CONNECTION_STRING + ']'
       })
     })
 
-    router.put('/api/activity', (req, res) => this.activityRouter.uploadActivity(req, res));
-    router.get('/api/activities', (req, res) => this.activityRouter.getAllActivities(req, res));
-    
     this.express.use('/', router);
   }
 }
