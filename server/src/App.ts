@@ -1,5 +1,6 @@
 import * as express from 'express'
 import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
+import { Logger } from './domain/Logger';
 
 class App {  
   public express;
@@ -7,7 +8,7 @@ class App {
 
   constructor () {
 
-    this.activityRouter = new ActivityRouter();
+    this.activityRouter = new ActivityRouter(Logger.create);
 
     this.express = express()
     this.mountRoutes()

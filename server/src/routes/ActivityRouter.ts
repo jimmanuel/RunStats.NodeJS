@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { ILog, LogFactory } from '../domain/Logger';
 
 export interface IActivityRouter { 
     uploadActivity(req: Request, res: Response) : Promise<void>;
@@ -8,7 +9,7 @@ export interface IActivityRouter {
 export class ActivityRouter implements IActivityRouter {
 
     private handleError(res: Response, error: Error) : void{
-        console.log(error);
+        this.logger.error(error);
         res.status(500).json(error.message);
     }
 
@@ -29,6 +30,9 @@ export class ActivityRouter implements IActivityRouter {
         }
     }
 
-    constructor() {
+
+    private readonly logger : ILog;
+    constructor(logFactory: LogFactory) {
+        this.logger = logFactory('ActivityRouter');
     }
 }
