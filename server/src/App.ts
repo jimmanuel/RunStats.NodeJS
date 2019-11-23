@@ -8,14 +8,18 @@ class App {
 
   constructor () {
 
+    const logger = Logger.create('App');
+
     this.activityRouter = new ActivityRouter(Logger.create);
+
+    logger.info('All Routers and necessary dependencies have been instantiated')
 
     this.express = express()
     this.mountRoutes()
   }
 
   private mountRoutes (): void {
-    const router = express.Router()
+    const router = express.Router();
     router.put('/api/activity', (req, res) => this.activityRouter.uploadActivity(req, res));
     router.get('/api/activities', (req, res) => this.activityRouter.getAllActivities(req, res));
 
