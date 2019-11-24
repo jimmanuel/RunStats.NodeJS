@@ -11,7 +11,9 @@
     "eslint": "node_modules/.bin/eslint -c eslintrc.yaml",
     "compile": "rm -rf ./app/*; node_modules/typescript/bin/tsc",
     "test": "node_modules/mocha/bin/mocha app/test/**/*.spec.js",
-    "prune": "npm prune --prod; rm -rf ./app/test"
+    "prune-build-output": "rm -rf ./app/test",
+    "prune-modules": "npm prune --prod",
+    "package": "npm run prune-build-output; zip -r rs.debug.zip package*.json ./app/*"
   },
   "repository": {
     "type": "git",
