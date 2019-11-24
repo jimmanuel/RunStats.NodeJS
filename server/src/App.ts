@@ -1,6 +1,8 @@
 import * as express from 'express'
 import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
 import { Logger } from './domain/Logger';
+import { MySqlConfig } from './persistence/MySqlConfig';
+import { ActivityMetadataRepository } from './persistence/ActivityMetadataRepository';
 
 class App {  
   public express;
@@ -10,7 +12,10 @@ class App {
 
     const logger = Logger.create('App');
 
-    this.activityRouter = new ActivityRouter(Logger.create);
+    const dbConfig = new MySqlConfig(Logger.create);
+    const actMetaRepo = new ActivityMetadataRepository(Logger.create, dbConfig);
+
+    this.activityRouter = new ActivityRouter(Logger.create, actMetaRepo);
 
     logger.info('All Routers and necessary dependencies have been instantiated')
 

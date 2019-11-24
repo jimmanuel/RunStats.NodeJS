@@ -13,7 +13,9 @@
     "test": "node_modules/mocha/bin/mocha app/test/**/*.spec.js",
     "prune-build-output": "rm -rf ./app/test",
     "prune-modules": "npm prune --prod",
-    "package": "npm run prune-build-output; zip -r rs.debug.zip package*.json ./app/*"
+    "prune-prod": "npm run prune-build-output; npm run prune-modules",
+    "package": "npm run prune-prod; zip -r rs.debug.zip package*.json ./app/* ./node_modules/*",
+    "publish": "npm run package; aws s3 cp rs.debug.zip s3://labar.jimbo.code/build/rs.debug.zip"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
   },
   "homepage": "https://github.com/jimmanuel/RunStats.NodeJS#readme",
   "devDependencies": {
+    "@types/aws-sdk": "^2.7.0",
     "@types/bunyan": "^1.8.6",
     "@types/chai": "^4.2.5",
     "@types/express": "^4.17.2",
@@ -39,6 +42,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
+    "aws-sdk": "^2.578.0",
     "bunyan": "^1.8.12",
     "express": "^4.17.1",
     "moment": "^2.24.0",
