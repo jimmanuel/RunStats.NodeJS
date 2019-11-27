@@ -9,7 +9,7 @@ export interface IActivityMetadataRepository {
 export class ActivityMetadataRepository extends MySqlRepoBase implements IActivityMetadataRepository {
     async printInfo(): Promise<void> {
 
-        this.query(async conn => {
+        return this.query(async conn => {
             const result = await conn.query(format('SELECT table_name FROM information_schema.tables where TABLE_SCHEMA = ?', ['RunStats']));
             this.logger.info(result);
             return;
