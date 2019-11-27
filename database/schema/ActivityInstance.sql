@@ -1,8 +1,8 @@
-create table ActivityInstance (
-    ID int identity(1,1) primary key,
-    FilePath nvarchar(max) not null,
-    DistanceMeters float not null,
+create table RunStats.ActivityInstance (
+    ID int auto_increment primary key,
+    FilePath longtext not null,
+    DistanceMeters double not null,
     DurationSeconds int not null,
-    StartTime datetime2 not null
+    StartTime datetime(6) not null,
+    UUID varchar(36) not null
 );
-go

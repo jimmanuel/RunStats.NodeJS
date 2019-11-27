@@ -1,21 +1,24 @@
 import { LogFactory, ILog } from "../domain/Logger";
-import { IMySqlConfig } from "./MySqlConfig";
+import { MySqlRepoBase } from "./MySqlRepoBase";
+import {format } from 'mysql'
 
 export interface IActivityMetadataRepository {
     printInfo() : Promise<void>;
 }
 
-export class ActivityMetadataRepository implements IActivityMetadataRepository {
+export class ActivityMetadataRepository extends MySqlRepoBase implements IActivityMetadataRepository {
     async printInfo(): Promise<void> {
-        const host = await this.mySqlConfig.getHostname();
-        const user = await this.mySqlConfig.getUsername();
-        this.logger.info({ username: user, hostname: host });
+
+        this.query(async conn => {
+            const result = await conn.query(format('SELECT table_name FROM information_schema.tables where TABLE_SCHEMA = ?', ['RunStats']));
+            this.logger.info(result);
+            return;
+        });
     }
 
-    private readonly logger: ILog;
-    constructor(logFactory: LogFactory,
-        private mySqlConfig: IMySqlConfig) {
-        this.logger = logFactory('ActivityMetadataRepository');
-    }
+    constructor(logFactory: LogFactory) {
+        
+        super(logFactory('ActivityMetadataRepository'));
 
+    }
 }
