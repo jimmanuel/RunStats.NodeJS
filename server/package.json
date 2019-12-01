@@ -14,8 +14,7 @@
     "prune-build-output": "rm -rf ./app/test",
     "prune-modules": "npm prune --prod",
     "prune-prod": "npm run prune-build-output; npm run prune-modules",
-    "package": "npm run prune-prod; zip -r rs.debug.zip package*.json ./app/* ./node_modules/*",
-    "publish": "npm run package; aws s3 cp rs.debug.zip s3://labar.jimbo.code/build/rs.debug.zip"
+    "package": "npm run prune-prod; zip -r rs.debug.zip package*.json ./app/* ./node_modules/*"
   },
   "repository": {
     "type": "git",
