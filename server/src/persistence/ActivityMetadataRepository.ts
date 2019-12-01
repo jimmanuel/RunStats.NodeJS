@@ -3,6 +3,7 @@ import { MySqlRepoBase } from "./MySqlRepoBase";
 import {format } from 'mysql'
 import { RunActivity } from "../domain/RunActivity";
 import { ActivityToken } from "../domain/ActivityToken";
+import * as uuid from 'uuid';
 
 export interface IActivityMetadataRepository {
     saveMetadata(activity: RunActivity): Promise<ActivityToken>;
@@ -12,7 +13,22 @@ export interface IActivityMetadataRepository {
 export class ActivityMetadataRepository extends MySqlRepoBase implements IActivityMetadataRepository {
     
     public async saveMetadata(activity: RunActivity): Promise<ActivityToken> {
-        throw new Error("Method not implemented.");
+        return this.query(async conn => {
+
+            const key = uuid.v4();
+
+            const insertSql = format('insert into RunStats.ActivityInstance (DistanceMeters, DurationSeconds, StartTime, UUID) values (?, ?, ?, ?)', 
+            [
+                activity.distanceMeters,
+                activity.duration,
+                activity.epochStartTime,
+                uuid
+            ]);
+
+            const result = await conn.query(insertSql);
+            
+            return new ActivityToken(result.insertId, key);
+        });
     }
     
     public async printInfo(): Promise<void> {

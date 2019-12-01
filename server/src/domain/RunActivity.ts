@@ -3,7 +3,7 @@ import { DataPoint } from './DataPoint';
 export class RunActivity {
 
     readonly distanceMeters: number;
-    //readonly duration: number;
+    readonly duration: number;
     readonly epochStartTime: number;
     readonly dataPoints: Array<DataPoint>;
 
@@ -18,5 +18,6 @@ export class RunActivity {
         for(let i = 0; i < this.dataPoints.length - 1; i++) {
             this.distanceMeters += this.dataPoints[i].calcuateDistanceTo(this.dataPoints[i+1]);
         }
+        this.duration = this.dataPoints[this.dataPoints.length - 1].epochTime - this.dataPoints[0].epochTime;
     }
 }
