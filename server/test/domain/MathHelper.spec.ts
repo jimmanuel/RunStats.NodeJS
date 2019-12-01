@@ -10,7 +10,7 @@ describe('MathHelper', () => {
   describe("calcuateDistance", () => {
 	  it('should calculate distance correctly', async () => {
         let content = fs.readFileSync(__dirname + '/../../../test/res/RK_gpx _2012-04-26_0704.gpx').toString();
-		let activity = await GpxParser.parseGpx(content);
+		let activity = await new GpxParser().parseGpx(content);
 		expect(activity).to.not.equal(null, 'a valid activity should be returned');
 		expect(activity.distanceMeters).to.equal(4659.543726307642, 'the distance should be correct');
 	  });

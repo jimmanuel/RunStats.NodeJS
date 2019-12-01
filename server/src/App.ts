@@ -1,9 +1,11 @@
 import * as express from 'express'
+import * as xmlparser from 'express-xml-bodyparser';
 import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
 import { Logger } from './domain/Logger';
 import { MySqlConfig } from './persistence/MySqlConfig';
 import { ActivityMetadataRepository } from './persistence/ActivityMetadataRepository';
 import { MySqlRepoBase } from './persistence/MySqlRepoBase';
+import { GpxParser } from './domain/GpxParser';
 
 class App {  
   public express;
@@ -15,7 +17,7 @@ class App {
 
     const actMetaRepo = new ActivityMetadataRepository(Logger.create);
 
-    this.activityRouter = new ActivityRouter(Logger.create, actMetaRepo);
+    this.activityRouter = new ActivityRouter(Logger.create, actMetaRepo, new GpxParser());
 
     logger.info('All Routers and necessary dependencies have been instantiated')
 
@@ -25,7 +27,10 @@ class App {
 
   private mountRoutes (): void {
     const router = express.Router();
-    router.put('/api/activity', (req, res) => this.activityRouter.uploadActivity(req, res));
+
+    const xmlHandler = xmlparser({trim: true, explicitArray: true, normalize: false, normalizeTags: false});
+
+    router.put('/api/activity', xmlHandler, (req, res) => this.activityRouter.uploadActivity(req, res));
     router.get('/api/activities', (req, res) => this.activityRouter.getAllActivities(req, res));
 
     router.get('/', (req, res) => {

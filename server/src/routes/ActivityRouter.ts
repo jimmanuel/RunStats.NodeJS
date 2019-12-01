@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { ILog, LogFactory } from '../domain/Logger';
 import { IActivityMetadataRepository } from '../persistence/ActivityMetadataRepository';
+import { IGpxParser } from '../domain/GpxParser';
 
 export interface IActivityRouter { 
     uploadActivity(req: Request, res: Response) : Promise<void>;
@@ -25,6 +26,8 @@ export class ActivityRouter implements IActivityRouter {
     }
     public async uploadActivity(req: Request, res: Response) : Promise<void> {
         try {
+            const activity = await this.gpxParser.parseGpx(req.body);
+            this.logger.info(`Start Time: ${activity.epochStartTime}, Distance (m): ${activity.distanceMeters}`)
             res.json({ success: true }).end();
         } 
         catch (error) {
@@ -34,7 +37,8 @@ export class ActivityRouter implements IActivityRouter {
 
     private readonly logger : ILog;
     constructor(logFactory: LogFactory,
-        private activityRepo: IActivityMetadataRepository) {
+        private activityRepo: IActivityMetadataRepository,
+        private gpxParser: IGpxParser) {
         this.logger = logFactory('ActivityRouter');
     }
 }

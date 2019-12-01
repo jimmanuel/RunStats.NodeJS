@@ -3,13 +3,17 @@ import { RunActivity } from './RunActivity';
 import { DataPoint } from "./DataPoint";
 import { DateTimeHelper } from './DateTimeHelper';
 
-export class GpxParser {
+export interface IGpxParser{
+    parseGpx(xmlData: string) : Promise<RunActivity>;
+}
 
-    public static async parseGpx(xmlData: string) : Promise<RunActivity> {
+export class GpxParser implements IGpxParser{
+
+    public async parseGpx(xmlData: string | any) : Promise<RunActivity> {
 
         let parser = new xml2js.Parser();
         
-        let result = await parser.parseStringPromise(xmlData); 
+        let result = typeof xmlData === 'string' ? await parser.parseStringPromise(xmlData) : xmlData; 
 
         let timeValue = result.gpx.trk[0].time[0];
 

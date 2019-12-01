@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import xml2js = require('xml2js');
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { it } from 'mocha';
@@ -11,18 +12,32 @@ describe('GpxParser', () => {
     it('should load file one correctly', async () => {
         let content = fs.readFileSync(__dirname + '/../../../test/res/RK_gpx_2011-10-18_0635PM.gpx').toString();
 		
-        let activity = await GpxParser.parseGpx(content);
+        let activity = await new GpxParser().parseGpx(content);
 		expect(activity).to.not.equal(null, 'a valid activity should be returned');
 		expect(activity.epochStartTime).to.equal(1318962941, 'the time should be correct');
 		expect(activity.dataPoints).to.not.equal(null, 'there should be data points');
 		expect(activity.dataPoints.length).to.equal(205, 'the number of data points should be correct')
 
-      });
+	  });
+	  
+	  it('should also work on a pre-parsed file correctly', async () => {
+			let content = fs.readFileSync(__dirname + '/../../../test/res/RK_gpx_2011-10-18_0635PM.gpx').toString();
+			let parser = new xml2js.Parser();
+			let xmlThing = await parser.parseStringPromise(content);
+
+			let activity = await new GpxParser().parseGpx(xmlThing);
+			expect(activity).to.not.equal(null, 'a valid activity should be returned');
+			expect(activity.epochStartTime).to.equal(1318962941, 'the time should be correct');
+			expect(activity.dataPoints).to.not.equal(null, 'there should be data points');
+			expect(activity.dataPoints.length).to.equal(205, 'the number of data points should be correct')
+
+		});
+	  
 	
       it('should load file two correctly', async () => {
         let content = fs.readFileSync(__dirname + '/../../../test/res/RK_gpx _2012-04-26_0704.gpx').toString();
 		
-		let activity = await GpxParser.parseGpx(content);
+		let activity = await new GpxParser().parseGpx(content);
 		expect(activity).to.not.equal(null, 'a valid activity should be returned');
 		expect(activity.epochStartTime).to.equal(1335431097, 'the time should be correct');
 		expect(activity.dataPoints).to.not.equal(null, 'there should be data points');
