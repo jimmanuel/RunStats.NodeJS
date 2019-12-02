@@ -17,12 +17,12 @@ export class ActivityMetadataRepository extends MySqlRepoBase implements IActivi
 
             const key = uuid.v4();
 
-            const insertSql = format('insert into RunStats.ActivityInstance (DistanceMeters, DurationSeconds, StartTime, UUID) values (?, ?, ?, ?)', 
+            const insertSql = format('insert into RunStats.ActivityMetadata (DistanceMeters, DurationSeconds, StartTime, UUID) values (?, ?, ?, ?)', 
             [
                 activity.distanceMeters,
                 activity.duration,
                 activity.epochStartTime,
-                uuid
+                key
             ]);
 
             const result = await conn.query(insertSql);

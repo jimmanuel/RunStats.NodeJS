@@ -1,4 +1,4 @@
-create table RunStats.ActivityInstance (
+create table RunStats.ActivityMetadata (
     ID int auto_increment primary key,
     DistanceMeters double not null,
     DurationSeconds int not null,
