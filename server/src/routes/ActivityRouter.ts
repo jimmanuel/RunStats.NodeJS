@@ -31,8 +31,9 @@ export class ActivityRouter implements IActivityRouter {
             this.logger.info(`Start Time: ${activity.epochStartTime}, Distance (m): ${activity.distanceMeters}`);
 
             const token : ActivityToken = await this.activityRepo.saveMetadata(activity);
-
-            res.json({ success: true }).end();
+            this.logger.info(token);
+            
+            res.json({ id: token.id }).end();
         } 
         catch (error) {
             this.handleError(res, error);
