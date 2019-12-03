@@ -4,6 +4,7 @@ import {format } from 'mysql'
 import { RunActivity } from "../domain/RunActivity";
 import { ActivityToken } from "../domain/ActivityToken";
 import * as uuid from 'uuid';
+import { ActivityExistsError } from "../domain/ActivityExistsError";
 
 export interface IActivityMetadataRepository {
     saveMetadata(activity: RunActivity): Promise<ActivityToken>;
@@ -12,7 +13,20 @@ export interface IActivityMetadataRepository {
 
 export class ActivityMetadataRepository extends MySqlRepoBase implements IActivityMetadataRepository {
     
+    private async activityExists(startTime: number) : Promise<boolean> {
+        return this.query(async conn => {
+            const sql = format('select StartTime from RunStats.ActivityMetadata where StartTime = ?', [startTime])
+            const result = await conn.query(sql);
+            return result.length > 0;
+        });
+    }
+
     public async saveMetadata(activity: RunActivity): Promise<ActivityToken> {
+
+        if (await this.activityExists(activity.epochStartTime)) {
+            throw new ActivityExistsError();
+        }
+        
         return this.query(async conn => {
 
             const key = uuid.v4();

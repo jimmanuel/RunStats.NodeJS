@@ -4,6 +4,7 @@ import { IActivityMetadataRepository } from '../persistence/ActivityMetadataRepo
 import { IGpxParser } from '../domain/GpxParser';
 import { ActivityToken } from '../domain/ActivityToken';
 import { S3BucketFactory } from '../persistence/S3Bucket';
+import { ActivityExistsError } from '../domain/ActivityExistsError';
 
 export interface IActivityRouter { 
     uploadActivity(req: Request, res: Response) : Promise<void>;
@@ -13,8 +14,14 @@ export interface IActivityRouter {
 export class ActivityRouter implements IActivityRouter {
 
     private handleError(res: Response, error: Error) : void{
-        this.logger.error(error);
-        res.status(500).json(error.message).end();
+
+        if (error instanceof ActivityExistsError) {
+            this.logger.warn(error);
+            res.status(409).json({message: 'an activity starting at that exact second has already been uploaded'}).end();
+        } else {
+            this.logger.error(error);
+            res.status(500).json(error.message).end();
+        }
     }
 
     public async getAllActivities(req: Request, res: Response): Promise<void> {
@@ -26,6 +33,7 @@ export class ActivityRouter implements IActivityRouter {
             this.handleError(res, error);
         }
     }
+
     public async uploadActivity(req: Request, res: Response) : Promise<void> {
         try {
             const activity = await this.gpxParser.parseGpx(req.body);
