@@ -22,6 +22,7 @@ export class ActivityRouter implements IActivityRouter {
             const uuid = await this.activityRepo.getActivityUUID(id);
             const key = `${uuid}.json`;
 
+            // TODO: add handling for a key that somehow doesn't exist
             const strValue = await (await this.s3Factory()).getItem(key);
 
             res.json(JSON.parse(strValue)).end();
@@ -43,6 +44,8 @@ export class ActivityRouter implements IActivityRouter {
 
     public async uploadActivity(req: Request, res: Response) : Promise<void> {
         try {
+            // TODO: add transactionality to this method - if the S3 insert fails we need to rollback or flag 
+            // the record in the DB
             const activity = await this.gpxParser.parseGpx(req.body);
             this.logger.info(`Start Time: ${activity.epochStartTime}, Distance (m): ${activity.distanceMeters}`);
 

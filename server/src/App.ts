@@ -9,7 +9,6 @@ import { MySqlRepoBase } from './persistence/MySqlRepoBase';
 import { GpxParser } from './domain/GpxParser';
 import { S3Bucket } from './persistence/S3Bucket';
 
-const s3Config = new S3Config(Logger.create);
 const dbConfig = new MySqlConfig(Logger.create);
 MySqlRepoBase.init(dbConfig);
 
@@ -21,6 +20,7 @@ class App {
 
     const logger = Logger.create('App');
 
+    const s3Config = new S3Config(Logger.create);
     const s3Factory = async () => new S3Bucket(await s3Config.getBucketName());
     const actMetaRepo = new ActivityMetadataRepository(Logger.create);
 
