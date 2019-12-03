@@ -3,5 +3,6 @@ create table RunStats.ActivityMetadata (
     DistanceMeters double not null,
     DurationSeconds int not null,
     StartTime int not null,
-    UUID varchar(36) not null
+    UUID varchar(36) not null,
+    UNIQUE(StartTime)
 );

@@ -26,8 +26,8 @@ export class ActivityRouter implements IActivityRouter {
 
     public async getAllActivities(req: Request, res: Response): Promise<void> {
         try {
-            await this.activityRepo.printInfo();
-            res.json({ success: true }).end();
+            const results = await this.activityRepo.getAllMetadata();
+            res.json(results).end();
         } 
         catch (error) {
             this.handleError(res, error);

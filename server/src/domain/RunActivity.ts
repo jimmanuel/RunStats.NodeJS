@@ -1,5 +1,12 @@
 import { DataPoint } from './DataPoint';
 
+export interface IActivityMetadata {
+    id: number;
+    distanceMeters: number;
+    duration: number;
+    epochStartTime: number;
+}
+
 export class RunActivity {
 
     readonly distanceMeters: number;

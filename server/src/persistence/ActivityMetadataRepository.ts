@@ -1,17 +1,29 @@
 import { LogFactory, ILog } from "../domain/Logger";
 import { MySqlRepoBase } from "./MySqlRepoBase";
 import {format } from 'mysql'
-import { RunActivity } from "../domain/RunActivity";
+import { RunActivity, IActivityMetadata } from "../domain/RunActivity";
 import { ActivityToken } from "../domain/ActivityToken";
 import * as uuid from 'uuid';
 import { ActivityExistsError } from "../domain/ActivityExistsError";
 
 export interface IActivityMetadataRepository {
     saveMetadata(activity: RunActivity): Promise<ActivityToken>;
-    printInfo() : Promise<void>;
+    getAllMetadata() : Promise<IActivityMetadata[]>;
 }
 
 export class ActivityMetadataRepository extends MySqlRepoBase implements IActivityMetadataRepository {
+    public async getAllMetadata(): Promise<IActivityMetadata[]> {
+        return this.query(async conn => {
+            const sql = 'select * from RunStats.ActivityMetadata'
+            const result : Array<any> = await conn.query(sql);
+            return result.map(x => { return { 
+                id: x.ID, 
+                distanceMeters: x.DistanceMeters,
+                duration: x.DurationSeconds,
+                epochStartTime: x.StartTime
+            };});
+        });
+    }
     
     private async activityExists(startTime: number) : Promise<boolean> {
         return this.query(async conn => {
@@ -26,7 +38,7 @@ export class ActivityMetadataRepository extends MySqlRepoBase implements IActivi
         if (await this.activityExists(activity.epochStartTime)) {
             throw new ActivityExistsError();
         }
-        
+
         return this.query(async conn => {
 
             const key = uuid.v4();
