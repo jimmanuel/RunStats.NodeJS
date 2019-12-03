@@ -2,10 +2,16 @@ import * as express from 'express'
 import * as xmlparser from 'express-xml-bodyparser';
 import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
 import { Logger } from './domain/Logger';
-import { MySqlConfig } from './persistence/MySqlConfig';
+import { MySqlConfig } from './config/MySqlConfig';
+import { S3Config } from './config/S3Config';
 import { ActivityMetadataRepository } from './persistence/ActivityMetadataRepository';
 import { MySqlRepoBase } from './persistence/MySqlRepoBase';
 import { GpxParser } from './domain/GpxParser';
+import { S3Bucket } from './persistence/S3Bucket';
+
+const s3Config = new S3Config(Logger.create);
+const dbConfig = new MySqlConfig(Logger.create);
+MySqlRepoBase.init(dbConfig);
 
 class App {  
   public express;
@@ -15,9 +21,10 @@ class App {
 
     const logger = Logger.create('App');
 
+    const s3Factory = async () => new S3Bucket(await s3Config.getBucketName());
     const actMetaRepo = new ActivityMetadataRepository(Logger.create);
 
-    this.activityRouter = new ActivityRouter(Logger.create, actMetaRepo, new GpxParser());
+    this.activityRouter = new ActivityRouter(Logger.create, actMetaRepo, new GpxParser(), s3Factory);
 
     logger.info('All Routers and necessary dependencies have been instantiated')
 
@@ -42,8 +49,5 @@ class App {
     this.express.use('/', router);
   }
 }
-
-const dbConfig = new MySqlConfig(Logger.create);
-MySqlRepoBase.init(dbConfig);
 
 export default new App().express  

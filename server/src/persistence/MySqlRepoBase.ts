@@ -1,4 +1,4 @@
-import { IMySqlConfig } from "./MySqlConfig";
+import { IMySqlConfig } from "../config/MySqlConfig";
 import * as mysql from 'promise-mysql';
 import { ILog } from "../domain/Logger";
 
