@@ -5,13 +5,33 @@ import { RunActivity, IActivityMetadata } from "../domain/RunActivity";
 import { ActivityToken } from "../domain/ActivityToken";
 import * as uuid from 'uuid';
 import { ActivityExistsError } from "../domain/ActivityExistsError";
+import { ActivityNotFoundException } from "../domain/ActivityNotFoundException";
 
 export interface IActivityMetadataRepository {
+    getActivityUUID(id: number) : Promise<string>;
     saveMetadata(activity: RunActivity): Promise<ActivityToken>;
     getAllMetadata() : Promise<IActivityMetadata[]>;
 }
 
 export class ActivityMetadataRepository extends MySqlRepoBase implements IActivityMetadataRepository {
+    
+    public async getActivityUUID(id: number) : Promise<string> {
+        return this.query(async conn => {
+            const sql = format('select UUID from RunStats.ActivityMetadata where ID = ?', [id]);
+            const result : Array<any> = await conn.query(sql);
+            
+            if (result.length == 0) {
+                throw new ActivityNotFoundException();
+            } 
+            
+            if (result.length > 1) {
+                throw new ActivityNotFoundException();
+            }
+
+            return result[0].UUID;
+        });
+    }
+    
     public async getAllMetadata(): Promise<IActivityMetadata[]> {
         return this.query(async conn => {
             const sql = 'select * from RunStats.ActivityMetadata'

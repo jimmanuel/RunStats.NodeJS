@@ -39,6 +39,7 @@ class App {
 
     router.put('/api/activity', xmlHandler, (req, res) => this.activityRouter.uploadActivity(req, res));
     router.get('/api/activities', (req, res) => this.activityRouter.getAllActivities(req, res));
+    router.get('/api/activity/:id/datapoints', (req, res) => this.activityRouter.getActivity(req, res));
 
     router.get('/', (req, res) => {
       res.json({

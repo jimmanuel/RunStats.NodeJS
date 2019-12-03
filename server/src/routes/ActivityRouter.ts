@@ -5,22 +5,29 @@ import { IGpxParser } from '../domain/GpxParser';
 import { ActivityToken } from '../domain/ActivityToken';
 import { S3BucketFactory } from '../persistence/S3Bucket';
 import { ActivityExistsError } from '../domain/ActivityExistsError';
+import { ActivityNotFoundException } from '../domain/ActivityNotFoundException';
 
 export interface IActivityRouter { 
     uploadActivity(req: Request, res: Response) : Promise<void>;
+    getActivity(req: Request, res: Response) : Promise<void>;
     getAllActivities(req: Request, res: Response) : Promise<void>;
 }
 
 export class ActivityRouter implements IActivityRouter {
 
-    private handleError(res: Response, error: Error) : void{
 
-        if (error instanceof ActivityExistsError) {
-            this.logger.warn(error);
-            res.status(409).json({message: 'an activity starting at that exact second has already been uploaded'}).end();
-        } else {
-            this.logger.error(error);
-            res.status(500).json(error.message).end();
+    public async getActivity(req: Request, res: Response): Promise<void> {
+        try {
+            const id : number = +req.params.id;
+            const uuid = await this.activityRepo.getActivityUUID(id);
+            const key = `${uuid}.json`;
+
+            const strValue = await (await this.s3Factory()).getItem(key);
+
+            res.json(JSON.parse(strValue)).end();
+        } 
+        catch (error) {
+            this.handleError(res, error);
         }
     }
 
@@ -51,6 +58,21 @@ export class ActivityRouter implements IActivityRouter {
         }
     }
 
+    private handleError(res: Response, error: Error) : void{
+
+        if (error instanceof ActivityExistsError) {
+            this.logger.warn(error);
+            res.status(409).json({message: 'an activity starting at that exact second has already been uploaded'}).end();
+        } 
+        else if (error instanceof ActivityNotFoundException) {
+            res.status(404).json(error.message).end();
+        } 
+        else {
+            this.logger.error(error);
+            res.status(500).json(error.message).end();
+        }
+    }
+    
     private readonly logger : ILog;
     constructor(logFactory: LogFactory,
         private activityRepo: IActivityMetadataRepository,
