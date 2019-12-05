@@ -8,9 +8,8 @@ import { ActivityMetadataRepository } from './persistence/ActivityMetadataReposi
 import { MySqlRepoBase } from './persistence/MySqlRepoBase';
 import { GpxParser } from './domain/GpxParser';
 import { S3Bucket } from './persistence/S3Bucket';
+import { DataPointRepository } from './persistence/DataPointRepository';
 
-const dbConfig = new MySqlConfig(Logger.create);
-MySqlRepoBase.init(dbConfig);
 
 class App {  
   public express;
@@ -20,11 +19,14 @@ class App {
 
     const logger = Logger.create('App');
 
+    const dbConfig = new MySqlConfig(Logger.create);
+    MySqlRepoBase.init(dbConfig);
     const s3Config = new S3Config(Logger.create);
     const s3Factory = async () => new S3Bucket(await s3Config.getBucketName());
     const actMetaRepo = new ActivityMetadataRepository(Logger.create);
+    const dataPointRepo = new DataPointRepository(Logger.create, s3Factory);
 
-    this.activityRouter = new ActivityRouter(Logger.create, actMetaRepo, new GpxParser(), s3Factory);
+    this.activityRouter = new ActivityRouter(Logger.create, actMetaRepo, new GpxParser(), dataPointRepo);
 
     logger.info('All Routers and necessary dependencies have been instantiated')
 

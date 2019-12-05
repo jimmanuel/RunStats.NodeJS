@@ -3,3 +3,5 @@ app
 **/.env
 server/rs.debug.zip
 server/publish.sh
+client/build
+publish.sh

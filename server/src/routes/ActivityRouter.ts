@@ -6,6 +6,7 @@ import { ActivityToken } from '../domain/ActivityToken';
 import { S3BucketFactory } from '../persistence/S3Bucket';
 import { ActivityExistsError } from '../domain/ActivityExistsError';
 import { ActivityNotFoundException } from '../domain/ActivityNotFoundException';
+import { IDataPointRepository } from '../persistence/DataPointRepository';
 
 export interface IActivityRouter { 
     uploadActivity(req: Request, res: Response) : Promise<void>;
@@ -20,12 +21,7 @@ export class ActivityRouter implements IActivityRouter {
         try {
             const id : number = +req.params.id;
             const uuid = await this.activityRepo.getActivityUUID(id);
-            const key = `${uuid}.json`;
-
-            // TODO: add handling for a key that somehow doesn't exist
-            const strValue = await (await this.s3Factory()).getItem(key);
-
-            res.json(JSON.parse(strValue)).end();
+            res.json(await this.dataPointRepo.getDataPoints(uuid)).end();
         } 
         catch (error) {
             this.handleError(res, error);
@@ -52,7 +48,7 @@ export class ActivityRouter implements IActivityRouter {
             const token : ActivityToken = await this.activityRepo.saveMetadata(activity);
             this.logger.info(token);
             
-            await (await this.s3Factory()).putItem(`${token.uuid}.json`, JSON.stringify(activity.dataPoints));
+            await (this.dataPointRepo.saveDataPoints(token.uuid, activity.dataPoints));
 
             res.json({ id: token.id }).end();
         } 
@@ -80,7 +76,7 @@ export class ActivityRouter implements IActivityRouter {
     constructor(logFactory: LogFactory,
         private activityRepo: IActivityMetadataRepository,
         private gpxParser: IGpxParser,
-        private s3Factory: S3BucketFactory) {
+        private dataPointRepo: IDataPointRepository) {
         this.logger = logFactory('ActivityRouter');
     }
 }
