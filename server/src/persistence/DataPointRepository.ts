@@ -27,3 +27,15 @@ export class DataPointRepository implements IDataPointRepository {
         this.logger = logFactory('DataPointRepository');
     }
 }
+
+export class InMemoryDataPointRepo implements IDataPointRepository {
+    public async saveDataPoints(uuid: string, points: DataPoint[]): Promise<void> {
+        this.cache.set(uuid, points);
+    }    
+    
+    public async getDataPoints(uuid: string): Promise<DataPoint[]> {
+        return this.cache.get(uuid);
+    }
+
+    private cache = new Map<string, DataPoint[]>();
+}

@@ -2,13 +2,8 @@ import * as express from 'express'
 import * as xmlparser from 'express-xml-bodyparser';
 import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
 import { Logger } from './domain/Logger';
-import { MySqlConfig } from './config/MySqlConfig';
-import { S3Config } from './config/S3Config';
-import { ActivityMetadataRepository } from './persistence/ActivityMetadataRepository';
-import { MySqlRepoBase } from './persistence/MySqlRepoBase';
 import { GpxParser } from './domain/GpxParser';
-import { S3Bucket } from './persistence/S3Bucket';
-import { DataPointRepository } from './persistence/DataPointRepository';
+import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from './persistence/PersistenceFactory';
 
 
 class App {  
@@ -19,14 +14,14 @@ class App {
 
     const logger = Logger.create('App');
 
-    const dbConfig = new MySqlConfig(Logger.create);
-    MySqlRepoBase.init(dbConfig);
-    const s3Config = new S3Config(Logger.create);
-    const s3Factory = async () => new S3Bucket(await s3Config.getBucketName());
-    const actMetaRepo = new ActivityMetadataRepository(Logger.create);
-    const dataPointRepo = new DataPointRepository(Logger.create, s3Factory);
+    let persistenceFactory : IPersistenceFactory;
+    if (process.env.RS_PERSISTENCE == 'TRANSIENT') {
+      persistenceFactory = new InMemoryPersistenceFactory();
+    } else {
+      persistenceFactory = new AwsPersistenceFactory();
+    }
 
-    this.activityRouter = new ActivityRouter(Logger.create, actMetaRepo, new GpxParser(), dataPointRepo);
+    this.activityRouter = new ActivityRouter(Logger.create, persistenceFactory.getActivityRepo(), new GpxParser(), persistenceFactory.getDataPointRepo());
 
     logger.info('All Routers and necessary dependencies have been instantiated')
 

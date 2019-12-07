@@ -92,3 +92,67 @@ export class ActivityMetadataRepository extends MySqlRepoBase implements IActivi
 
     }
 }
+
+
+class ActivityRecord {
+    Id: number;
+    Distance: number;
+    StartTimeEpoch: number;
+    Duration: number;
+    UUID: string;
+}
+
+export class InMemoryActivityMetadataRepo implements IActivityMetadataRepository {
+
+    public async getActivityUUID(id: number): Promise<string> {
+        const item = this.cache.find(x => x.Id == id);
+        if (!item) {
+            throw new ActivityNotFoundException();
+        }
+        return item.UUID;
+    }    
+    
+    public async saveMetadata(activity: RunActivity): Promise<ActivityToken> {
+        const item = this.cache.find(x => x.StartTimeEpoch == activity.epochStartTime);
+        if (item) {
+            throw new ActivityExistsError();
+        }
+
+        const act = new ActivityRecord();
+        act.Id = this.getNextId();
+        act.Distance = activity.distanceMeters;
+        act.Duration = activity.duration;
+        act.StartTimeEpoch = activity.epochStartTime;
+        act.UUID = uuid.v4();
+
+        this.cache.push(act);
+
+        return new ActivityToken(act.Id, act.UUID);
+    }
+    
+    private getNextId() : number {
+        let id = 1;
+
+        for(let item of this.cache) {
+            if (id <= item.Id) {
+                id = item.Id+1;
+            }
+        }
+
+        return id;
+    }
+
+    public async getAllMetadata(): Promise<IActivityMetadata[]> {
+        return this.cache.map(x => { return { 
+            id: x.Id, 
+            distanceMeters: x.Distance,
+            duration: x.Duration,
+            epochStartTime: x.StartTimeEpoch
+        };});
+    }
+
+    private readonly cache : ActivityRecord[] = [];
+    constructor() {
+
+    }
+}

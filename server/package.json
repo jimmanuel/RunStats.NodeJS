@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "debug": "RS_MODE=DEBUG node ./app/src/index.js",
+    "debug": "RS_PERSISTENCE=TRANSIENT node ./app/src/index.js",
     "start": "node ./app/src/index.js",
     "eslint": "node_modules/.bin/eslint -c eslintrc.yaml",
     "compile": "rm -rf ./app/*; node_modules/typescript/bin/tsc",
