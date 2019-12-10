@@ -2,5 +2,21 @@
 .App-header {
     display: grid;
     grid-template-columns: auto auto;
+    padding-left: 15px;
+    padding-right: 15px;
   }
+
+.Import-button {
+  width: 160px;
+  height: 40%;
+  float: right;
+}
   
+.Button-Table {
+  display: table;
+}
+
+.Button-container {
+  vertical-align: middle;
+  display: table-cell;
+}

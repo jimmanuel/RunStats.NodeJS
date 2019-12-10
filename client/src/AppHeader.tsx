@@ -10,10 +10,14 @@ class AppHeader extends React.Component {
     render() {
       return (
       <div className="App-header">
-
-        <h2>RunStats.JS</h2>
-        <button className="importButton" onClick={() => this.importFiles()}>Import File(s)</button>
-  
+        <div>
+          <h2>RunStats.JS</h2>
+        </div>
+        <div className="Button-Table">
+          <div className="Button-container">
+            <button className="Import-button" onClick={() => this.importFiles()}>Import File(s)</button>
+          </div>
+        </div>
       </div>)
     }
   
