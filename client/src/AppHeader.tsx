@@ -5,11 +5,19 @@ class AppHeader extends React.Component {
 
     private async importFiles() : Promise<void> {
       if (!this.inputOpenFileRef.current) {
-        console.log(`it's null so I'm returning early`)
+        console.log(`fileuploader null so I'm returning early`)
         return;
       }
       await this.inputOpenFileRef.current.click();
-      const fileList: FileList = this.inputOpenFileRef.current.files ? this.inputOpenFileRef.current.files : new FileList();
+      if (!this.inputOpenFileRef.current.files) {
+        console.log(`no files selected, returning early`);
+      }
+      const fileList: FileList | null = this.inputOpenFileRef.current.files;
+      if (!fileList) {
+        console.log(`no files selected (2), returning early`);
+        return;
+      }
+      console.log(`going to upload ${fileList.length} files`)
       for(let i = 0; i < fileList.length; i++) {
         
         let file = fileList.item(i);
