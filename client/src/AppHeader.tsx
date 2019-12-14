@@ -1,5 +1,6 @@
 import React, { RefObject } from 'react';
 import './AppHeader.css';
+import { IActivityService, ActivityService } from './services/ActivityService';
 
 class AppHeader extends React.Component {
 
@@ -8,7 +9,14 @@ class AppHeader extends React.Component {
         console.log(`fileuploader null so I'm returning early`)
         return;
       }
-      await this.inputOpenFileRef.current.click();
+      this.inputOpenFileRef.current.click();
+    }
+  
+    private async fileChosen(event: any) : Promise<void> {
+      if (!this.inputOpenFileRef.current) {
+        console.log(`fileuploader null so I'm returning early`)
+        return;
+      }
       if (!this.inputOpenFileRef.current.files) {
         console.log(`no files selected, returning early`);
       }
@@ -25,12 +33,11 @@ class AppHeader extends React.Component {
           console.log(`file at ${i} is null`)
           continue;
         }
-        console.log(file.name);
-
-        
+        console.log(`uploading ${file.name}`);
+        await this.activityService.uploadActivity(file);
       }
     }
-  
+
     render() {
       return (
       <div className="App-header">
@@ -39,7 +46,7 @@ class AppHeader extends React.Component {
         </div>
         <div className="Button-Table">
           <div className="Button-container">
-          <input ref={this.inputOpenFileRef} type="file" accept=".gpx" multiple style={{display:"none"}}/>
+          <input ref={this.inputOpenFileRef} type="file" accept=".gpx" multiple style={{display:"none"}} onChange={this.fileChosen.bind(this)}/>
             <button className="Import-button" onClick={() => this.importFiles()}>Import File(s)</button>
           </div>
         </div>
@@ -48,11 +55,14 @@ class AppHeader extends React.Component {
 
 
     private readonly inputOpenFileRef : RefObject<HTMLInputElement>
-  
+    private readonly activityService : IActivityService;
+
     constructor(props: any) {
       super(props);
 
       this.inputOpenFileRef = React.createRef()
+      this.activityService = new ActivityService();
+
     }
   }
   

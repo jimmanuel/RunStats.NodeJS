@@ -2,7 +2,7 @@
 Welcome to the Node JS flavor of RunStats.
 
 This project serves multiple purposes:
-- Replicate functionality from RunKeeper that now requires a paid subscription to use
+- Replicate functionality from a popular Keeper of Running Data web site that now requires a paid subscription to use
 - Let me learn about building web apps using the NodeJS/Angular/React tech stack
 - Let me learn how to deploy and run an app on AWS
 
@@ -16,5 +16,5 @@ A few more things of note:
 
 Tech Notes
 - I built an adapter layer so that I can easily switch between storing data in AWS native services or storing all data in memory in order to run it locally.  This should also allow me to build a layer to learn Azure or Google cloud storage later.
-- I started integrating a proper DI library (inversify) but it became a bit of over-enginnering for what I needed.  I reverted to the pinciples of KISS and YAGNI.  IF and when the home rolled Inversion of Control implementation becomes too much to maintain, I'l revisit that decision.
+- I started integrating a proper DI library (inversify) but it became a bit of over-enginnering for what I needed.  I reverted to the pinciples of KISS and YAGNI.  If and when the home rolled Inversion of Control implementation becomes too much to maintain, I'l revisit that decision.
 - Test coverage is horrible.
