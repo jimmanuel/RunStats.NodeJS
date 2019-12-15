@@ -10,6 +10,7 @@ import { IDataPointRepository } from '../persistence/DataPointRepository';
 
 export interface IActivityRouter { 
     uploadActivity(req: Request, res: Response) : Promise<void>;
+    deleteActivity(req: Request, res: Response) : Promise<void>;
     getActivity(req: Request, res: Response) : Promise<void>;
     getAllActivities(req: Request, res: Response) : Promise<void>;
 }
@@ -21,6 +22,21 @@ export class ActivityRouter implements IActivityRouter {
         try {
             const id : number = +req.params.id;
             const uuid = await this.activityRepo.getActivityUUID(id);
+            res.json(await this.dataPointRepo.getDataPoints(uuid)).end();
+        } 
+        catch (error) {
+            this.handleError(res, error);
+        }
+    }
+
+    public async deleteActivity(req: Request, res: Response): Promise<void> {
+        try {
+            const id : number = +req.params.id;
+            const uuid = await this.activityRepo.getActivityUUID(id);
+
+            await this.dataPointRepo.deleteDataPoints(uuid);
+            await this.activityRepo.deleteActivity(id);
+
             res.json(await this.dataPointRepo.getDataPoints(uuid)).end();
         } 
         catch (error) {

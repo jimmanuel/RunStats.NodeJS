@@ -2,7 +2,7 @@ node_modules
 app
 **/.env
 server/rs.debug.zip
-server/publish.sh
+server/*.sh
 client/build
 publish.sh
 server/coverage/*

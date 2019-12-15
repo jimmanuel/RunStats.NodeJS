@@ -47,12 +47,9 @@ class App {
     router.put('/api/activity', xmlHandler, (req, res) => this.activityRouter.uploadActivity(req, res));
     router.get('/api/activities', (req, res) => this.activityRouter.getAllActivities(req, res));
     router.get('/api/activity/:id/datapoints', (req, res) => this.activityRouter.getActivity(req, res));
+    router.delete('/api/activity/:id', (req, res) => this.activityRouter.deleteActivity(req, res));
 
-    router.get('/', (req, res) => {
-      res.json({
-        message: 'TODO: build a frontend application using . . . something'
-      })
-    })
+    router.get('/*', express.static(__dirname + '/../client'));
 
     this.express.use('/', router);
   }

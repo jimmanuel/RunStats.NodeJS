@@ -3,11 +3,16 @@ import { ILog, LogFactory } from "../domain/Logger";
 import { S3BucketFactory } from "./S3Bucket";
 
 export interface IDataPointRepository {
+    deleteDataPoints(uuid: string) : Promise<void>;
     saveDataPoints(uuid: string, points: DataPoint[]) : Promise<void>;
     getDataPoints(uuid: string) : Promise<DataPoint[]>;
 }
 
 export class DataPointRepository implements IDataPointRepository {
+    async deleteDataPoints(uuid: string): Promise<void> {
+        const key = `${uuid}.json`;
+        (await this.s3Factory()).deleteItem(key);
+    }
     
     public async saveDataPoints(uuid: string, points: DataPoint[]): Promise<void> {
         return (await this.s3Factory()).putItem(`${uuid}.json`, JSON.stringify(points));
@@ -29,6 +34,9 @@ export class DataPointRepository implements IDataPointRepository {
 }
 
 export class InMemoryDataPointRepo implements IDataPointRepository {
+    async deleteDataPoints(uuid: string) : Promise<void> {
+        this.cache.delete(uuid);
+    }
     public async saveDataPoints(uuid: string, points: DataPoint[]): Promise<void> {
         this.cache.set(uuid, points);
     }    

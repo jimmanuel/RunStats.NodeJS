@@ -7,9 +7,13 @@ export interface S3BucketFactory {
 export interface IS3Bucket {
     getItem(key: string) : Promise<string>;
     putItem(key: string, value: string) : Promise<void>;
+    deleteItem(key: string) : Promise<void>;
 }
 
 export class S3Bucket implements IS3Bucket {
+    async deleteItem(key: string): Promise<void> {
+        await this.s3Connection.deleteObject({ Bucket: this.bucketName, Key: key });
+    }
     
     async getItem(key: string): Promise<string> {
         return (await this.s3Connection.getObject({ Key: key, Bucket: this.bucketName }).promise()).Body.toString();

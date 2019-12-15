@@ -8,12 +8,20 @@ import { ActivityExistsError } from "../domain/ActivityExistsError";
 import { ActivityNotFoundException } from "../domain/ActivityNotFoundException";
 
 export interface IActivityMetadataRepository {
+    deleteActivity(id: number) : Promise<void>;
     getActivityUUID(id: number) : Promise<string>;
     saveMetadata(activity: RunActivity): Promise<ActivityToken>;
     getAllMetadata() : Promise<IActivityMetadata[]>;
 }
 
 export class ActivityMetadataRepository extends MySqlRepoBase implements IActivityMetadataRepository {
+    async deleteActivity(id: number): Promise<void> {
+        return this.query(async conn => {
+            const sql = format('delete from RunStats.ActivityMetadata where ID = ?', [id]);
+            await conn.query(sql);
+            return;
+        });
+    }
     
     public async getActivityUUID(id: number) : Promise<string> {
         return this.query(async conn => {
@@ -103,6 +111,9 @@ class ActivityRecord {
 }
 
 export class InMemoryActivityMetadataRepo implements IActivityMetadataRepository {
+    async deleteActivity(id: number) : Promise<void> {
+        this.cache = this.cache.filter(x => x.Id != id);
+    }
 
     public async getActivityUUID(id: number): Promise<string> {
         const item = this.cache.find(x => x.Id == id);
@@ -151,7 +162,7 @@ export class InMemoryActivityMetadataRepo implements IActivityMetadataRepository
         };});
     }
 
-    private readonly cache : ActivityRecord[] = [];
+    private cache : ActivityRecord[] = [];
     constructor() {
 
     }
