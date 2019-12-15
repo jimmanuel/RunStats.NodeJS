@@ -12,7 +12,7 @@ export interface IS3Bucket {
 
 export class S3Bucket implements IS3Bucket {
     async deleteItem(key: string): Promise<void> {
-        await this.s3Connection.deleteObject({ Bucket: this.bucketName, Key: key });
+        await this.s3Connection.deleteObject({ Bucket: this.bucketName, Key: key }).promise();
     }
     
     async getItem(key: string): Promise<string> {

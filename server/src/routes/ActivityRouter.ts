@@ -37,7 +37,7 @@ export class ActivityRouter implements IActivityRouter {
             await this.dataPointRepo.deleteDataPoints(uuid);
             await this.activityRepo.deleteActivity(id);
 
-            res.json(await this.dataPointRepo.getDataPoints(uuid)).end();
+            res.status(200).end();
         } 
         catch (error) {
             this.handleError(res, error);
