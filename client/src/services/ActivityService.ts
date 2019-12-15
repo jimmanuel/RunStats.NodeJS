@@ -20,6 +20,7 @@ export class ActivityService implements IActivityService {
             await axios.default.put(this.urls.getCreateActivityUrl(), file, { headers: { 'Content-Type' : 'application/xml'}});
         } catch (error) {
             console.log(JSON.stringify(error))
+            throw error;
         }
     }
 

@@ -25,6 +25,8 @@ class AppHeader extends React.Component {
         console.log(`no files selected (2), returning early`);
         return;
       }
+
+      let failedFiles : string[] = [];
       console.log(`going to upload ${fileList.length} files`)
       for(let i = 0; i < fileList.length; i++) {
         
@@ -33,8 +35,19 @@ class AppHeader extends React.Component {
           console.log(`file at ${i} is null`)
           continue;
         }
-        console.log(`uploading ${file.name}`);
-        await this.activityService.uploadActivity(file);
+
+        try {
+          await this.activityService.uploadActivity(file);
+        } 
+        catch (error) {
+          failedFiles.push(file.name);
+        }
+      }
+
+      if (failedFiles.length > 0) {
+        for(const f of failedFiles) {
+          console.log(`FAILED: ${f}`);
+        }
       }
     }
 

@@ -1,5 +1,4 @@
 import * as express from 'express'
-import * as xmlparser from 'express-xml-bodyparser';
 import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
 import { Logger, ILog } from './domain/Logger';
 import { GpxParser } from './domain/GpxParser';
@@ -41,10 +40,10 @@ class App {
       });
     }
     
-    const xmlHandler = xmlparser({trim: true, explicitArray: true, normalize: false, normalizeTags: false});
+    const textHandler = express.text({ limit: '10MB', type: 'application/xml'});
 
     router.options('*');
-    router.put('/api/activity', xmlHandler, (req, res) => this.activityRouter.uploadActivity(req, res));
+    router.put('/api/activity', textHandler, (req, res) => this.activityRouter.uploadActivity(req, res));
     router.get('/api/activities', (req, res) => this.activityRouter.getAllActivities(req, res));
     router.get('/api/activity/:id/datapoints', (req, res) => this.activityRouter.getActivity(req, res));
     router.delete('/api/activity/:id', (req, res) => this.activityRouter.deleteActivity(req, res));
