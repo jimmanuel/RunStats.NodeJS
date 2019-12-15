@@ -12,15 +12,25 @@ export interface IS3Bucket {
 
 export class S3Bucket implements IS3Bucket {
     async deleteItem(key: string): Promise<void> {
-        await this.s3Connection.deleteObject({ Bucket: this.bucketName, Key: key }).promise();
+        const result = await this.s3Connection.deleteObject({ Bucket: this.bucketName, Key: key }).promise();
+        if (result.$response.error) {
+            throw result.$response.error;
+        }  
     }
     
     async getItem(key: string): Promise<string> {
-        return (await this.s3Connection.getObject({ Key: key, Bucket: this.bucketName }).promise()).Body.toString();
+        const result = (await this.s3Connection.getObject({ Key: key, Bucket: this.bucketName }).promise());
+        if (result.$response.error) {
+            throw result.$response.error;
+        }  
+        return result.Body.toString();
     }
     
     async putItem(key: string, value: string): Promise<void> {
-        await this.s3Connection.putObject( { Body: value, Key: key, Bucket: this.bucketName }).promise();
+        const result = await this.s3Connection.putObject( { Body: value, Key: key, Bucket: this.bucketName }).promise();
+        if (result.$response.error) {
+            throw result.$response.error;
+        }  
     }
  
     private readonly s3Connection: AWS.S3;
