@@ -6,11 +6,8 @@ export interface IActivityService {
 
 class Urls {
 
-    //private readonly serverName = 'http://localhost:3001';
-    private readonly serverName = '';
-
     getCreateActivityUrl() : string {
-        return `${this.serverName}/api/activity`;
+        return `/api/activity`;
     }
 }
 
