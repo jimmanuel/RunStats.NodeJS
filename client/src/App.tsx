@@ -1,6 +1,6 @@
 import React from 'react';
-import AppHeader from './AppHeader';
-import MapContent from './MapContent';
+import AppHeader from './components/HeaderBar/AppHeader';
+import MapContent from './components/Map/MapContent';
 import './App.css';
 
 class App extends React.Component {

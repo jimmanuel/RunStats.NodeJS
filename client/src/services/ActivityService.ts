@@ -1,5 +1,9 @@
 import * as axios from 'axios';
 
+export class ActivityItem {
+    
+}
+
 export interface IActivityService {
     uploadActivity(file: File) : Promise<void>;
 }

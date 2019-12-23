@@ -1,6 +1,6 @@
 import React, { RefObject } from 'react';
 import './AppHeader.css';
-import { IActivityService, ActivityService } from './services/ActivityService';
+import { IActivityService, ActivityService } from '../../services/ActivityService';
 
 class AppHeader extends React.Component {
 

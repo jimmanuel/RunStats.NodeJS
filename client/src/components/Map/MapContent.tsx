@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './logo.svg';
+import logo from './../../logo.svg';
 import './MapContent.css';
 
 class MapContent extends React.Component {
