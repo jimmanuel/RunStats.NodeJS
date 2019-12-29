@@ -1,14 +1,19 @@
 import React from 'react';
 import logo from './../../logo.svg';
 import './MapContent.css';
+import { IActivityItem } from '../../services/ActivityService';
 
-class MapContent extends React.Component {
+interface MapContentState {
+  activities: IActivityItem[];
+}
+
+class MapContent extends React.Component<MapContentState, any> {
 
   render() {
     return (
     <div className="Map-Content">
       <div>
-        TODO: populate the list of activities
+        TODO: populate the list of activities ({this.props.activities.length})
       </div>
       
       <header className="App-header2">
@@ -30,6 +35,7 @@ class MapContent extends React.Component {
 
   constructor(props: any) {
     super(props);
+    this.setState({activities: []});
   }
 }
 

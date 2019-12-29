@@ -2,7 +2,11 @@ import React, { RefObject } from 'react';
 import './AppHeader.css';
 import { IActivityService, ActivityService } from '../../services/ActivityService';
 
-class AppHeader extends React.Component {
+interface AppHeaderState {
+  invokeRefresh : () => Promise<void>;
+}
+
+class AppHeader extends React.Component<AppHeaderState, any> {
 
     private async importFiles() : Promise<void> {
       if (!this.inputOpenFileRef.current) {
@@ -49,6 +53,8 @@ class AppHeader extends React.Component {
           console.log(`FAILED: ${f}`);
         }
       }
+
+      await this.props.invokeRefresh();
     }
 
     render() {
