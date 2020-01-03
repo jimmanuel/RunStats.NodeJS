@@ -10,7 +10,11 @@ interface ActivityListProps {
 export class ActivityList extends React.Component<ActivityListProps, any> {
 
     render() {
-        const itemFactory = this.props.activities.map(x => <li><ActivityListItem activity={x} /></li>);
+        const itemFactory = this.props.activities.sort((x, y) => {
+            if (x.epochStartTime < y.epochStartTime) return -1;
+            if (x.epochStartTime > y.epochStartTime) return 1;
+            return 0;
+        }).map(x => <li><ActivityListItem activity={x} /></li>);
         let message = `There are ${this.props.activities.length} activities.`;
         if (this.props.activities.length == 1) {
             message = `There is 1 activity.`;
