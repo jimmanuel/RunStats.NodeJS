@@ -1,11 +1,17 @@
 import React from "react";
+import { IActivityItem } from "../../services/ActivityService";
 
-export class ActivityListItemProps{
-
+export interface IActivityListItemProps {
+    activity: IActivityItem;
 }
 
-export class ActivityListItem extends React.Component<ActivityListItemProps, any> {
+export class ActivityListItem extends React.Component<IActivityListItemProps, any> {
     public render() : JSX.Element {
-        return <label>TODO: implement items based on state</label>
+
+        let startDate = new Date(0);
+        startDate.setUTCSeconds(this.props.activity.epochStartTime);
+
+
+    return <label>{startDate.toLocaleString()}</label>;
     }    
 }
