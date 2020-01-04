@@ -4,11 +4,13 @@ import { Logger, ILog } from './domain/Logger';
 import { GpxParser } from './domain/GpxParser';
 import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from './persistence/PersistenceFactory';
 import { IAppConfig, LocalConfigProvider, AwsConfigProvider } from './config/AppConfig';
+import { IConfigRouter, ConfigRouter } from './routes/ConfigRouter';
 
 
 class App {  
   public express;
   private readonly activityRouter : IActivityRouter;
+  private readonly configRouter : IConfigRouter;
   private readonly logger : ILog = Logger.create('App');
   private readonly appConfig: IAppConfig;
 
@@ -27,6 +29,7 @@ class App {
       persistenceFactory = new AwsPersistenceFactory();
     }
 
+    this.configRouter = new ConfigRouter(Logger.create, this.appConfig);
     this.activityRouter = new ActivityRouter(Logger.create, persistenceFactory.getActivityRepo(), new GpxParser(), persistenceFactory.getDataPointRepo());
 
     this.logger.info('All Routers and necessary dependencies have been instantiated')
@@ -55,6 +58,8 @@ class App {
     router.get('/api/activities', (req, res) => this.activityRouter.getAllActivities(req, res));
     router.get('/api/activity/:id/datapoints', (req, res) => this.activityRouter.getActivity(req, res));
     router.delete('/api/activity/:id', (req, res) => this.activityRouter.deleteActivity(req, res));
+
+    router.get('/api/config', (req, res) => this.configRouter.getConfig(req, res))
 
     router.get('/*', express.static(__dirname + '/../client'));
 

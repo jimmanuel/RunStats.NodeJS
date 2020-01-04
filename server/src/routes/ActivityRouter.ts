@@ -3,10 +3,10 @@ import { ILog, LogFactory } from '../domain/Logger';
 import { IActivityMetadataRepository } from '../persistence/ActivityMetadataRepository';
 import { IGpxParser } from '../domain/GpxParser';
 import { ActivityToken } from '../domain/ActivityToken';
-import { S3BucketFactory } from '../persistence/S3Bucket';
 import { ActivityExistsError } from '../domain/ActivityExistsError';
 import { ActivityNotFoundException } from '../domain/ActivityNotFoundException';
 import { IDataPointRepository } from '../persistence/DataPointRepository';
+import { BaseRouter } from './BaseRouter';
 
 export interface IActivityRouter { 
     uploadActivity(req: Request, res: Response) : Promise<void>;
@@ -15,7 +15,7 @@ export interface IActivityRouter {
     getAllActivities(req: Request, res: Response) : Promise<void>;
 }
 
-export class ActivityRouter implements IActivityRouter {
+export class ActivityRouter extends BaseRouter implements IActivityRouter {
 
 
     public async getActivity(req: Request, res: Response): Promise<void> {
@@ -73,26 +73,10 @@ export class ActivityRouter implements IActivityRouter {
         }
     }
 
-    private handleError(res: Response, error: Error) : void{
-
-        if (error instanceof ActivityExistsError) {
-            this.logger.warn(error);
-            res.status(409).json({message: 'an activity starting at that exact second has already been uploaded'}).end();
-        } 
-        else if (error instanceof ActivityNotFoundException) {
-            res.status(404).json(error.message).end();
-        } 
-        else {
-            this.logger.error(error);
-            res.status(500).json(error.message).end();
-        }
-    }
-    
-    private readonly logger : ILog;
     constructor(logFactory: LogFactory,
         private activityRepo: IActivityMetadataRepository,
         private gpxParser: IGpxParser,
         private dataPointRepo: IDataPointRepository) {
-        this.logger = logFactory('ActivityRouter');
+        super(logFactory('ActivityRouter'));
     }
 }
