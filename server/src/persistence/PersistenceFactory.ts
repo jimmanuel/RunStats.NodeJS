@@ -24,9 +24,9 @@ export class AwsPersistenceFactory implements IPersistenceFactory {
     private readonly actMetaRepo : IActivityMetadataRepository;
 
     public constructor() {
-        const dbConfig = new MySqlConfig(Logger.create);
+        const dbConfig = new MySqlConfig();
         MySqlRepoBase.init(dbConfig);
-        const s3Config = new S3Config(Logger.create);
+        const s3Config = new S3Config();
         const s3Factory = async () => new S3Bucket(await s3Config.getBucketName());
         this.actMetaRepo = new ActivityMetadataRepository(Logger.create);
         this.dataPointRepo = new DataPointRepository(Logger.create, s3Factory);

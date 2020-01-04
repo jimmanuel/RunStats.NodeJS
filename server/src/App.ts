@@ -3,17 +3,25 @@ import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
 import { Logger, ILog } from './domain/Logger';
 import { GpxParser } from './domain/GpxParser';
 import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from './persistence/PersistenceFactory';
+import { IAppConfig, LocalConfigProvider, AwsConfigProvider } from './config/AppConfig';
 
 
 class App {  
   public express;
   private readonly activityRouter : IActivityRouter;
   private readonly logger : ILog = Logger.create('App');
+  private readonly appConfig: IAppConfig;
 
   constructor () {
 
+    if (process.env.MODE == 'LOCAL') {
+      this.appConfig = new LocalConfigProvider();
+    } else {
+      this.appConfig = new AwsConfigProvider();
+    }
+
     let persistenceFactory : IPersistenceFactory;
-    if (process.env.RS_PERSISTENCE == 'TRANSIENT') {
+    if (this.appConfig.PersistenceMode == 'TRANSIENT') {
       persistenceFactory = new InMemoryPersistenceFactory();
     } else {
       persistenceFactory = new AwsPersistenceFactory();
@@ -30,7 +38,7 @@ class App {
   private mountRoutes (): void {
     const router = express.Router();
 
-    if (process.env.CORS) {
+    if (this.appConfig.EnableCors) {
       this.logger.info('enabling CORS')
       router.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
@@ -52,6 +60,19 @@ class App {
 
     this.express.use('/', router);
   }
+
+  public async start() : Promise<void> {
+    
+    this.express.listen(this.appConfig.Port, (err) => {  
+      if (err) {
+        return console.log(err)
+      }
+    
+      return console.log(`server is listening on ${this.appConfig.Port}`)
+    })
+
+    console.log(`GOOGLE KEY: ${await this.appConfig.GetGoogleApiKey()}`);
+  }
 }
 
-export default new App().express  
+export default new App();  
