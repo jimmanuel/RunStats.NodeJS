@@ -3,19 +3,24 @@ import AppHeader from './components/HeaderBar/AppHeader';
 import MapContent from './components/Map/MapContent';
 import './App.css';
 import { ActivityService, IActivityService, IActivityItem } from './services/ActivityService';
+import { ConfigService, IConfigService } from './services/ConfigService';
 
 interface AppState {
   activities: IActivityItem[];
 }
 
-class App extends React.Component<any, AppState> {
+interface AppProps {
+  configService: IConfigService;
+}
+
+class App extends React.Component<AppProps, AppState> {
 
   async refresh() : Promise<void> {
     const acts = await this.activityService.getAllActivities();
     this.setState( { activities: acts });
   }
 
-  render() {
+  render() : JSX.Element {
 
     let acts : IActivityItem[] = [];
     if (this.state) {
@@ -26,7 +31,7 @@ class App extends React.Component<any, AppState> {
     <div >
       <AppHeader invokeRefresh={() => this.refresh()}/>
 
-      <MapContent activities={acts}/>
+      <MapContent activities={acts} apiKey={this.props.configService.getGoogleApiKey()}/>
     </div>)
   }
 

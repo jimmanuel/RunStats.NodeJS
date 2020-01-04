@@ -18,3 +18,7 @@ Tech Notes
 - I built an adapter layer so that I can easily switch between storing data in AWS native services or storing all data in memory in order to run it locally.  This should also allow me to build a layer to learn Azure or Google cloud storage later.
 - I started integrating a proper DI library (inversify) but it became a bit of over-enginnering for what I needed.  I reverted to the pinciples of KISS and YAGNI.  If and when the home rolled Inversion of Control implementation becomes too much to maintain, I'l revisit that decision.
 - Test coverage is horrible.
+
+Runtime Configuration
+- When running the application locally, configuration is stored in a .env file
+- When running in AWS, configuration is stored in the Parameter Store
