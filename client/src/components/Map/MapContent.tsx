@@ -4,6 +4,7 @@ import './MapContent.css';
 import { IActivityItem } from '../../services/ActivityService';
 import { ActivityList } from '../ActivityList/ActivityList'
 import { Map, GoogleApiWrapper } from 'google-maps-react';
+import { IDataPointService, DataPointService } from '../../services/DataPointService';
 
 interface MapContentProps {
   activities: IActivityItem[];
@@ -11,25 +12,38 @@ interface MapContentProps {
   google: any;
 }
 
-class MapContent extends React.Component<MapContentProps, any> {
+interface MapContentState {
+  selectedActivityId: number;
+}
+
+class MapContent extends React.Component<MapContentProps, MapContentState> {
+
+  async showOnMap(activityId: number) : Promise<void> {
+    //const dataPoints = await this.dataPointService.getDataPoints(activityId);
+
+  }
 
   render() {
 
     return (
     <div className="Map-Content">
-      <ActivityList activities={this.props.activities} />
-      
-      <Map
-        google={this.props.google}
-        zoom={14}
-        initialCenter={{
-         lat: -1.2884,
-         lng: 36.8233
-        }}
-      />
+      <div className="Activity-List">
+        <ActivityList showOnMap={this.showOnMap} activities={this.props.activities} />
+      </div>
+      <div>
+        <Map 
+          google={this.props.google}
+          zoom={14}
+          initialCenter={{ 
+          lat: 38.8892955268143,
+          lng: -77.0501980539345
+          }}
+        />
+      </div>
     </div>)
   }
 
+  private readonly dataPointService : IDataPointService = new DataPointService();
   constructor(props: any) {
     super(props);
   }

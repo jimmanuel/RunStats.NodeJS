@@ -3,7 +3,7 @@ import AppHeader from './components/HeaderBar/AppHeader';
 import MapContent from './components/Map/MapContent';
 import './App.css';
 import { ActivityService, IActivityService, IActivityItem } from './services/ActivityService';
-import { ConfigService, IConfigService } from './services/ConfigService';
+import { IConfigService } from './services/ConfigService';
 
 interface AppState {
   activities: IActivityItem[];
