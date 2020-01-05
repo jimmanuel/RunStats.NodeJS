@@ -6,3 +6,4 @@ server/*.sh
 client/build
 publish.sh
 server/coverage/*
+server/npm-debug.log

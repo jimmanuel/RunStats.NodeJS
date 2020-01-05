@@ -11,7 +11,7 @@
     "start": "node ./app/src/index.js",
     "eslint": "node_modules/.bin/eslint -c eslintrc.yaml",
     "compile": "rm -rf ./app/*; node_modules/typescript/bin/tsc",
-    "test": "npx jest --coverage app/test/**/*.spec.js",
+    "test": "./node_modules/.bin/jest --coverage app/test/**/*.spec.js",
     "prune-build-output": "rm -rf ./app/test",
     "prune-modules": "npm prune --prod",
     "prune-prod": "npm run prune-build-output; npm run prune-modules",
