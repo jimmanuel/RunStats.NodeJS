@@ -1,10 +1,9 @@
 import React from 'react';
-import logo from './../../logo.svg';
 import './MapContent.css';
 import { IActivityItem } from '../../services/ActivityService';
 import { ActivityList } from '../ActivityList/ActivityList'
-import { Map, GoogleApiWrapper } from 'google-maps-react';
-import { IDataPointService, DataPointService } from '../../services/DataPointService';
+import { Map, GoogleApiWrapper, Polyline } from 'google-maps-react';
+import { IDataPointService, DataPointService, IDataPoint } from '../../services/DataPointService';
 
 interface MapContentProps {
   activities: IActivityItem[];
@@ -14,31 +13,48 @@ interface MapContentProps {
 
 interface MapContentState {
   selectedActivityId: number;
+  dataPoints: IDataPoint[];
 }
 
 class MapContent extends React.Component<MapContentProps, MapContentState> {
 
-  async showOnMap(activityId: number) : Promise<void> {
-    //const dataPoints = await this.dataPointService.getDataPoints(activityId);
-
+  public async showOnMap(activityId: number) : Promise<void> {
+    const dataPoints = await this.dataPointService.getDataPoints(activityId);
+    this.setState({ selectedActivityId: activityId, dataPoints: dataPoints });
   }
 
   render() {
 
+    let lineCoords : any[] = [];
+    if (this.state && this.state.dataPoints) {
+      const sortedPoints = this.state.dataPoints.sort((x : IDataPoint, y: IDataPoint) => {
+        if (x.epochTime < y.epochTime) return -1;
+        if (x.epochTime > y.epochTime) return 1;
+        return 0;
+      });
+
+      for(const p of sortedPoints) {
+        lineCoords.push({ lat: p.latitude, lng: p.longitude});
+      }
+    }
+
     return (
     <div className="Map-Content">
       <div className="Activity-List">
-        <ActivityList showOnMap={this.showOnMap} activities={this.props.activities} />
+        <ActivityList showOnMap={x => this.showOnMap(x)} activities={this.props.activities} />
       </div>
       <div>
         <Map 
           google={this.props.google}
           zoom={14}
-          initialCenter={{ 
-          lat: 38.8892955268143,
-          lng: -77.0501980539345
-          }}
-        />
+          
+        >
+          <Polyline
+            paths={lineCoords}
+            strokeColor="#0000FF"
+            strokeOpacity={0.8}
+            strokeWeight={2} />
+          </Map>
       </div>
     </div>)
   }

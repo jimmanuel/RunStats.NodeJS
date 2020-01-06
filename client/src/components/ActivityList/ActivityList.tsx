@@ -4,13 +4,13 @@ import { ActivityListItem } from './ActivityListItem';
 
 interface ActivityListProps {
     activities: IActivityItem[];
-    showOnMap: (id: number) => Promise<void>;
+    showOnMap: (id: number) => void;
   }
 
 
 export class ActivityList extends React.Component<ActivityListProps, any> {
 
-  showOnMap(activityId: number) : void {
+  public showOnMap(activityId: number) : void {
     this.props.showOnMap(activityId);
   }
 
@@ -19,7 +19,7 @@ export class ActivityList extends React.Component<ActivityListProps, any> {
         if (x.epochStartTime < y.epochStartTime) return 1;
         if (x.epochStartTime > y.epochStartTime) return -1;
         return 0;
-    }).map(x => <p className="Activity-List-Item"><ActivityListItem showOnMap={this.showOnMap} activity={x} /></p>);
+    }).map(x => <p className="Activity-List-Item"><ActivityListItem showOnMap={x => this.showOnMap(x)} activity={x} /></p>);
 
     let message = `There are ${this.props.activities.length} activities.`;
     if (this.props.activities.length == 1) {
@@ -33,7 +33,7 @@ export class ActivityList extends React.Component<ActivityListProps, any> {
     </div>)
   }
 
-  constructor(props: any) {
+  constructor(props: ActivityListProps) {
     super(props);
   }
 }
