@@ -14,7 +14,7 @@ export interface IDataPointService {
 export class DataPointService implements IDataPointService {
     async getDataPoints(activityId: number): Promise<IDataPoint[]> {
         try {
-            const results = await axios.default.get(`/api/activity/${activityId}`, { headers : { 'Accept-Type' : 'application/json'}});
+            const results = await axios.default.get(`/api/activity/${activityId}/datapoints`, { headers : { 'Accept-Type' : 'application/json'}});
             return results.data;
         } catch(error) {
             console.log(JSON.stringify(error))

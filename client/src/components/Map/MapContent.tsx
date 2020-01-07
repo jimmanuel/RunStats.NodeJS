@@ -4,6 +4,7 @@ import { IActivityItem } from '../../services/ActivityService';
 import { ActivityList } from '../ActivityList/ActivityList'
 import { Map, GoogleApiWrapper, Polyline } from 'google-maps-react';
 import { IDataPointService, DataPointService, IDataPoint } from '../../services/DataPointService';
+import { ActivityData } from '../../models/ActivityData';
 
 interface MapContentProps {
   activities: IActivityItem[];
@@ -26,7 +27,10 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
   render() {
 
     let lineCoords : any[] = [];
+    let bounds = new this.props.google.maps.LatLngBounds();
     if (this.state && this.state.dataPoints) {
+      const act = new ActivityData(this.state.dataPoints);
+      
       const sortedPoints = this.state.dataPoints.sort((x : IDataPoint, y: IDataPoint) => {
         if (x.epochTime < y.epochTime) return -1;
         if (x.epochTime > y.epochTime) return 1;
@@ -36,6 +40,14 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
       for(const p of sortedPoints) {
         lineCoords.push({ lat: p.latitude, lng: p.longitude});
       }
+
+      const actBounds = act.getActivityBounds();
+      console.log(JSON.stringify(actBounds));
+      bounds.extend({ lat: actBounds.topLeft.latitude, lng: actBounds.topLeft.longitude });
+      bounds.extend({ lat: actBounds.topRight.latitude, lng: actBounds.topRight.longitude });
+      bounds.extend({ lat: actBounds.bottomRight.latitude, lng: actBounds.bottomRight.longitude });
+      bounds.extend({ lat: actBounds.bottomLeft.latitude, lng: actBounds.bottomLeft.longitude });
+
     }
 
     return (
@@ -47,13 +59,9 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
         <Map 
           google={this.props.google}
           zoom={14}
-          
+          bounds={bounds}
         >
-          <Polyline
-            paths={lineCoords}
-            strokeColor="#0000FF"
-            strokeOpacity={0.8}
-            strokeWeight={2} />
+
           </Map>
       </div>
     </div>)
