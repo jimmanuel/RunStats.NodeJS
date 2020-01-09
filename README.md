@@ -14,11 +14,16 @@ A few more things of note:
 - the original version of this app was as an Android application
 - I'm comfortable with SQL and Node JS but not Angular or React.  Expect a high wtf/sloc ratio in those areas.
 
-Tech Notes
+---
+# Tech Notes
 - I built an adapter layer so that I can easily switch between storing data in AWS native services or storing all data in memory in order to run it locally.  This should also allow me to build a layer to learn Azure or Google cloud storage later.
 - I started integrating a proper DI library (inversify) but it became a bit of over-enginnering for what I needed.  I reverted to the pinciples of KISS and YAGNI.  If and when the home rolled Inversion of Control implementation becomes too much to maintain, I'l revisit that decision.
 - Test coverage is horrible.
 
-Runtime Configuration
+### Runtime Configuration
 - When running the application locally, configuration is stored in a .env file
 - When running in AWS, configuration is stored in the Parameter Store
+
+### GPX Data File inconsistencies:
+- old files in my dataset have the incorrect start time (it's not adjusted for local time zone)
+- the newest files contain multiple track segments, I'll need to merge all segments in the file

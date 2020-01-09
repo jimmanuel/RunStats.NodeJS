@@ -14,28 +14,40 @@ export interface IActivityBounds {
 
 export class ActivityData {
 
+    get orderedPoints() : IDataPoint[] {
+        return this.sortedPoints;
+    }
+
+    get theStart() : IDataPoint {
+        return this.sortedPoints[0];
+    }
+
+    get theEnd() : IDataPoint {
+        return this.sortedPoints[this.sortedPoints.length-1];
+    }
+
     getActivityBounds() : IActivityBounds {
         let topMost : IDataPoint | undefined = undefined;
         let rightMost :IDataPoint | undefined  = undefined;
         let leftMost : IDataPoint | undefined  = undefined;
         let bottomMost : IDataPoint | undefined  = undefined;
         
-        for (let point of this.dataPoints)
+        for (let point of this.sortedPoints)
         {
             if (topMost == null ||
-                (+topMost.latitude > +point.latitude))
+                (+topMost.latitude < +point.latitude))
                 topMost = point;
             
             if (rightMost == null ||
-                (+rightMost.longitude > +point.longitude))
+                (+rightMost.longitude < +point.longitude))
                 rightMost = point;
             
             if (leftMost == null ||
-                (+leftMost.latitude < +point.latitude))
+                (+leftMost.longitude > +point.longitude))
                 leftMost = point;
             
             if (bottomMost == null ||
-                (+bottomMost.longitude < +point.longitude))
+                (+bottomMost.latitude > +point.latitude))
                 bottomMost = point;
         }
 
@@ -51,6 +63,13 @@ export class ActivityData {
         }
     }
 
-    public constructor (private dataPoints: IDataPoint[]) {
+    private readonly sortedPoints : IDataPoint[];
+
+    public constructor (dataPoints: IDataPoint[]) {
+        this.sortedPoints = dataPoints.sort((x : IDataPoint, y: IDataPoint) => {
+            if (x.epochTime < y.epochTime) return -1;
+            if (x.epochTime > y.epochTime) return 1;
+            return 0;
+          });
     }
 }

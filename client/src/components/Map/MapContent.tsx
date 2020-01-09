@@ -2,7 +2,7 @@ import React from 'react';
 import './MapContent.css';
 import { IActivityItem } from '../../services/ActivityService';
 import { ActivityList } from '../ActivityList/ActivityList'
-import { Map, GoogleApiWrapper, Polyline, Marker } from 'google-maps-react';
+import { Map, GoogleApiWrapper, Polyline, Marker, Polygon } from 'google-maps-react';
 import { IDataPointService, DataPointService, IDataPoint } from '../../services/DataPointService';
 import { ActivityData } from '../../models/ActivityData';
 
@@ -43,28 +43,25 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
         </div>)
     }
 
-    let lineCoords : any[] = [];
+    let lineCoords : google.maps.LatLngLiteral[] = [];
     let bounds = new this.props.google.maps.LatLngBounds();
     const act = new ActivityData(this.state.dataPoints);
       
-    const sortedPoints = this.state.dataPoints.sort((x : IDataPoint, y: IDataPoint) => {
-      if (x.epochTime < y.epochTime) return -1;
-      if (x.epochTime > y.epochTime) return 1;
-      return 0;
-    });
-
-    for(const p of sortedPoints) {
-      lineCoords.push({ lat: p.latitude, lng: p.longitude});
+    for(const p of act.orderedPoints) {
+      lineCoords.push({ lat: +p.latitude, lng: +p.longitude});
     }
 
     const actBounds = act.getActivityBounds();
-    console.log(JSON.stringify(actBounds));
     bounds.extend({ lat: actBounds.topLeft.latitude, lng: actBounds.topLeft.longitude });
     bounds.extend({ lat: actBounds.topRight.latitude, lng: actBounds.topRight.longitude });
-    bounds.extend({ lat: actBounds.bottomRight.latitude, lng: actBounds.bottomRight.longitude });
     bounds.extend({ lat: actBounds.bottomLeft.latitude, lng: actBounds.bottomLeft.longitude });
+    bounds.extend({ lat: actBounds.bottomRight.latitude, lng: actBounds.bottomRight.longitude });
 
+    console.log(`BOUNDS: ${JSON.stringify(actBounds)}`);
+    console.log(`START: ${JSON.stringify(act.theStart)}`);
+    console.log(`END: ${JSON.stringify(act.theEnd)}`);
 
+    console.log(`LINE: ${JSON.stringify(lineCoords)}`)
     return (
     <div className="Map-Content">
       <div className="Activity-List">
@@ -78,20 +75,45 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
         >
 
 {/* <Marker
-    name={'Start'}
-    position={{lat: sortedPoints[0].latitude, lng: sortedPoints[0].latitude}} />
+    name={'Top Left'}
+    title={'Top Left'}
+    position={{lat: actBounds.topLeft.latitude, lng: actBounds.topLeft.longitude}} />
+  <Marker />
+<Marker
+    name={'Top Right'}
+    title={'Top Right'}
+    position={{lat: actBounds.topRight.latitude, lng: actBounds.topRight.longitude}} />
+  <Marker />
+<Marker
+    name={'Bottom Left'}
+    title={'Bottom Left'}
+    position={{lat: actBounds.bottomLeft.latitude, lng: actBounds.bottomLeft.longitude}} />
+  <Marker />
+<Marker
+    name={'Bottom Right'}    
+    title={'Bottom Right'}
+    position={{lat: actBounds.bottomRight.latitude, lng: actBounds.bottomRight.longitude}} />
+  <Marker /> */}
+
+ <Marker
+    name={'Begin'} 
+    title={'Begin'}
+    position={{lat: act.theStart.latitude, lng: act.theStart.latitude}} />
   <Marker />
 
   <Marker
     name={'End'}
-    position={{lat: sortedPoints[sortedPoints.length-1].latitude, lng: sortedPoints[sortedPoints.length-1].longitude}} />
-  <Marker /> */}
+    title={'End'}
+    position={{lat: act.theEnd.latitude, lng: act.theEnd.longitude}} />
+  <Marker /> 
 
-        {/* <Polyline
+         <Polygon
+
           paths={lineCoords}
+          fillOpacity={0.0}
           strokeColor="#0000FF"
           strokeOpacity={1}
-          strokeWeight={2} /> */}
+          strokeWeight={2} /> 
           </Map>
       </div>
     </div>)
