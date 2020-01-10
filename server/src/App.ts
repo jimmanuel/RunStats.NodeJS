@@ -70,13 +70,13 @@ class App {
     
     this.express.listen(this.appConfig.Port, (err) => {  
       if (err) {
-        return console.log(err)
+        return this.logger.error(err)
       }
     
-      return console.log(`server is listening on ${this.appConfig.Port}`)
+      return this.logger.info(`server is listening on ${this.appConfig.Port}`)
     })
 
-    console.log(`GOOGLE KEY: ${await this.appConfig.GetGoogleApiKey()}`);
+    this.logger.debug(`GOOGLE KEY: ${await this.appConfig.GetGoogleApiKey()}`);
   }
 }
 
