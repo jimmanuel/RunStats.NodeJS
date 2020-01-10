@@ -1,16 +1,11 @@
 import { MathHelper } from './MathHelper';
 
 export class DataPoint {
-    readonly latitude: number;
-    readonly longitude: number;
-    readonly altitude: number;
-    readonly epochTime: number;
-
     constructor(
-        latitude: number,
-        longitude: number,
-        altitude: number,
-        epochTime: number
+        public latitude: number,
+        public longitude: number,
+        public altitude: number,
+        public epochTime: number
     ) {
         this.latitude = latitude;
         this.longitude = longitude;

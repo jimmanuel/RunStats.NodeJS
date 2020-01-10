@@ -18,10 +18,14 @@ export class GpxParser implements IGpxParser{
         let timeValue = result.gpx.trk[0].time[0];
 
         let dataPoints : Array<DataPoint> = new Array();
-        let jsonPoints = result.gpx.trk[0].trkseg[0].trkpt;
-        for(let dataPointIndex = 0; dataPointIndex < jsonPoints.length; dataPointIndex++) {
-            let item = jsonPoints[dataPointIndex];
-            dataPoints.push(new DataPoint(item.$.lat, item.$.lon, item.ele[0], DateTimeHelper.convertToEpoch(item.time[0])));                
+        let segments = result.gpx.trk[0].trkseg;
+
+        for(let seg of segments) {
+            let jsonPoints = seg.trkpt;
+            for(let dataPointIndex = 0; dataPointIndex < jsonPoints.length; dataPointIndex++) {
+                let item = jsonPoints[dataPointIndex];
+                dataPoints.push(new DataPoint(item.$.lat, item.$.lon, item.ele[0], DateTimeHelper.convertToEpoch(item.time[0])));                
+            }
         }
 
         return new RunActivity(DateTimeHelper.convertToEpoch(timeValue), dataPoints);

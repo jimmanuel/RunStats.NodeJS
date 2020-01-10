@@ -26,4 +26,3 @@ A few more things of note:
 
 ### GPX Data File inconsistencies:
 - old files in my dataset have the incorrect start time (it's not adjusted for local time zone)
-- the newest files contain multiple track segments, I'll need to merge all segments in the file

@@ -1,8 +1,6 @@
 import * as fs from 'fs';
 import xml2js = require('xml2js');
 import { GpxParser } from '../../src/domain/GpxParser'
-import { RunActivity } from '../../src/domain/RunActivity';
-import { setTimeout } from 'timers';
 
 describe('GpxParser', () => {
   describe("parseGpx", () => {
@@ -52,5 +50,14 @@ describe('GpxParser', () => {
 		expect(activity.dataPoints[153].latitude).toEqual('38.886893000');
 		expect(activity.dataPoints[153].longitude).toEqual('-77.089452000');
 	  });
+
+	  it ('should merge track segments correctly', async () => {
+		let content = fs.readFileSync(__dirname + '/../../../test/res/RK_gpx _2019-05-19_1006.gpx').toString();
+				
+		let activity = await new GpxParser().parseGpx(content);
+		expect(activity).toBeDefined();
+		expect(activity.dataPoints).toBeDefined();
+		expect(activity.dataPoints.length).toEqual(919)
+	  })
   });
 });
