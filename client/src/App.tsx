@@ -7,6 +7,7 @@ import { IConfigService } from './services/ConfigService';
 
 interface AppState {
   activities: IActivityItem[];
+  headerDescription: string;
 }
 
 interface AppProps {
@@ -20,25 +21,31 @@ class App extends React.Component<AppProps, AppState> {
     this.setState( { activities: acts });
   }
 
+  public showOnHeader(description: string) : void {
+    this.setState({activities: this.state.activities, headerDescription: description});
+  }
+
   render() : JSX.Element {
 
     let acts : IActivityItem[] = [];
+    let headerDesc = '';
     if (this.state) {
       acts = this.state.activities;
+      headerDesc = this.state.headerDescription;
     }
 
     return (
     <div >
-      <AppHeader invokeRefresh={() => this.refresh()}/>
+      <AppHeader invokeRefresh={() => this.refresh()} headerDescription={headerDesc} />
 
-      <MapContent activities={acts} apiKey={this.props.configService.getGoogleApiKey()}/>
+      <MapContent activities={acts} showOnHeader={x => this.showOnHeader(x)} apiKey={this.props.configService.getGoogleApiKey()}/>
     </div>)
   }
 
   private readonly activityService : IActivityService = new ActivityService();
   constructor(props: any) {
     super(props);
-    this.setState({activities: []});
+    this.setState({activities: [], headerDescription: ''});
     this.refresh();
   }
 }

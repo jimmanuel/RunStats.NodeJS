@@ -10,6 +10,7 @@ interface MapContentProps {
   activities: IActivityItem[];
   apiKey: string;
   google: any;
+  showOnHeader: (description: string) => void;
 }
 
 interface MapContentState {
@@ -24,6 +25,10 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
     this.setState({ selectedActivityId: activityId, dataPoints: dataPoints });
   }
 
+  public showOnHeader(description: string) : void {
+    this.props.showOnHeader(description);
+  }
+
   render() {
 
     if (!this.state || !this.state.dataPoints) {
@@ -31,7 +36,7 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
       return (
         <div className="Map-Content">
           <div className="Activity-List">
-            <ActivityList showOnMap={x => this.showOnMap(x)} activities={this.props.activities} />
+            <ActivityList showOnMap={x => this.showOnMap(x)} showOnHeader={x => this.showOnHeader(x)} activities={this.props.activities} />
           </div>
           <div>
             <Map 
@@ -57,6 +62,11 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
     bounds.extend({ lat: actBounds.bottomLeft.latitude, lng: actBounds.bottomLeft.longitude });
     bounds.extend({ lat: actBounds.bottomRight.latitude, lng: actBounds.bottomRight.longitude });
 
+
+    // const center = { 
+    //   lat: actBounds.topLeft.latitude - ((actBounds.topLeft.latitude - actBounds.bottomLeft.latitude) / 2),
+    //   lng: actBounds.topLeft.longitude - ((actBounds.topLeft.longitude - actBounds.topRight.longitude) / 2) };
+
     console.log(`BOUNDS: ${JSON.stringify(actBounds)}`);
     console.log(`START: ${JSON.stringify(act.theStart)}`);
     console.log(`END: ${JSON.stringify(act.theEnd)}`);
@@ -65,12 +75,13 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
     return (
     <div className="Map-Content">
       <div className="Activity-List">
-        <ActivityList showOnMap={x => this.showOnMap(x)} activities={this.props.activities} />
+        <ActivityList showOnMap={x => this.showOnMap(x)} showOnHeader={x => this.showOnHeader(x)} activities={this.props.activities} />
       </div>
       <div>
         <Map 
           google={this.props.google}
           zoom={14}
+          //initialCenter={center}
           bounds={bounds}
         >
 

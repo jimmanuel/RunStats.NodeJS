@@ -2,11 +2,12 @@ import React, { RefObject } from 'react';
 import './AppHeader.css';
 import { IActivityService, ActivityService } from '../../services/ActivityService';
 
-interface AppHeaderState {
+interface AppHeaderProps {
   invokeRefresh : () => Promise<void>;
+  headerDescription: string;
 }
 
-class AppHeader extends React.Component<AppHeaderState, any> {
+class AppHeader extends React.Component<AppHeaderProps, any> {
 
     private async importFiles() : Promise<void> {
       if (!this.inputOpenFileRef.current) {
@@ -60,12 +61,13 @@ class AppHeader extends React.Component<AppHeaderState, any> {
     render() {
       return (
       <div className="App-header">
-        <div>
+        <div className="Header-Description">
           <h2>RunStats.JS</h2>
+          <label className="Description-Label">{this.props.headerDescription}</label>
         </div>
         <div className="Button-Table">
-          <div className="Button-container">
-          <input ref={this.inputOpenFileRef} type="file" accept=".gpx" multiple style={{display:"none"}} onChange={this.fileChosen.bind(this)}/>
+          <div className="Centerized-tablecell">
+            <input ref={this.inputOpenFileRef} type="file" accept=".gpx" multiple style={{display:"none"}} onChange={this.fileChosen.bind(this)}/>
             <button className="Import-button" onClick={() => this.importFiles()}>Import File(s)</button>
           </div>
         </div>
