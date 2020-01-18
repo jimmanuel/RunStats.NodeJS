@@ -56,6 +56,7 @@ class App {
     router.options('*');
     router.put('/api/activity', textHandler, (req, res) => this.activityRouter.uploadActivity(req, res));
     router.get('/api/activities', (req, res) => this.activityRouter.getAllActivities(req, res));
+    router.delete('/api/activities', (req, res) => this.activityRouter.deleteAllActivities(req, res));
     router.get('/api/activity/:id/datapoints', (req, res) => this.activityRouter.getActivity(req, res));
     router.delete('/api/activity/:id', (req, res) => this.activityRouter.deleteActivity(req, res));
 
