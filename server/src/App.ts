@@ -29,6 +29,8 @@ class App {
       persistenceFactory = new AwsPersistenceFactory();
     }
 
+    persistenceFactory.init();
+
     this.configRouter = new ConfigRouter(Logger.create, this.appConfig);
     this.activityRouter = new ActivityRouter(Logger.create, persistenceFactory.getActivityRepo(), new GpxParser(), persistenceFactory.getDataPointRepo());
 
