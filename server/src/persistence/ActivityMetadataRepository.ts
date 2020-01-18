@@ -8,6 +8,7 @@ import { ActivityExistsError } from "../domain/ActivityExistsError";
 import { ActivityNotFoundException } from "../domain/ActivityNotFoundException";
 
 export interface IActivityMetadataRepository {
+    ping() : Promise<void>;
     deleteActivity(id: number) : Promise<void>;
     getActivityUUID(id: number) : Promise<string>;
     saveMetadata(activity: RunActivity): Promise<ActivityToken>;
@@ -15,6 +16,15 @@ export interface IActivityMetadataRepository {
 }
 
 export class ActivityMetadataRepository extends MySqlRepoBase implements IActivityMetadataRepository {
+    
+    public async ping(): Promise<void> {
+        return this.query(async conn => {
+            const sql = format('select top 1 * from RunStats.ActivityMetadata', []);
+            await conn.query(sql);
+            return;
+        });
+    }
+    
     async deleteActivity(id: number): Promise<void> {
         return this.query(async conn => {
             const sql = format('delete from RunStats.ActivityMetadata where ID = ?', [id]);
@@ -111,6 +121,9 @@ class ActivityRecord {
 }
 
 export class InMemoryActivityMetadataRepo implements IActivityMetadataRepository {
+    async ping(): Promise<void> {
+        return; // nothing to do
+    }
     async deleteActivity(id: number) : Promise<void> {
         this.cache = this.cache.filter(x => x.Id != id);
     }

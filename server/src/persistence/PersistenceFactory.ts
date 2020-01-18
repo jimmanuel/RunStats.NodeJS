@@ -9,9 +9,15 @@ import { S3Bucket } from "./S3Bucket";
 export interface IPersistenceFactory {
     getDataPointRepo() : IDataPointRepository;
     getActivityRepo() : IActivityMetadataRepository;
+    init() : Promise<void>;
 }
 
 export class AwsPersistenceFactory implements IPersistenceFactory {
+    
+    init(): Promise<void> {
+        return this.actMetaRepo.ping();
+    }
+
     getDataPointRepo(): IDataPointRepository {
         return this.dataPointRepo;
     }    
@@ -34,6 +40,10 @@ export class AwsPersistenceFactory implements IPersistenceFactory {
 }
 
 export class InMemoryPersistenceFactory implements IPersistenceFactory {
+    async init(): Promise<void> {
+        // nothing to do here
+    }
+
     getDataPointRepo(): IDataPointRepository {
         return this.dataPointRepo;
     }    
