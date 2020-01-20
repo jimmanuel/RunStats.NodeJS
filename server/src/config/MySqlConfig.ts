@@ -1,4 +1,3 @@
-import { LogFactory, ILog } from "../domain/Logger";
 import { AwsParameterStoreConfig } from "./AwsParameterStoreConfig";
 
 export interface IMySqlConfig {
@@ -10,13 +9,13 @@ export interface IMySqlConfig {
 
 export class MySqlConfig extends AwsParameterStoreConfig implements IMySqlConfig {
     async getHostname(): Promise<string> {
-        return this.getValue('dev-rs-mysql-hostname', true);
+        return this.getValue('tfdev-db-server', true);
     }    
     async getUsername(): Promise<string> {
-        return this.getValue('dev-rs-mysql-username', true);
+        return this.getValue('tfdev-db-username', true);
     }
     async getPassword(): Promise<string> {
-        return this.getValue('dev-rs-mysql-password', true);
+        return this.getValue('tfdev-db-pwd', true);
     }
 
     constructor() {

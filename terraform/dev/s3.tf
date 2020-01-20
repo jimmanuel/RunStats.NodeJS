@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "tfdev-rs-data" {
-    bucket = "tfdev-rs-data"
+    bucket = var.s3_bucket_name
     acl = "private"
 
     server_side_encryption_configuration {

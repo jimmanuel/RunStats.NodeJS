@@ -8,5 +8,7 @@ publish.sh
 server/coverage/*
 server/npm-debug.log
 **/.terraform
+**/.tfvars
 **/terraform.tfstate
 **/terraform.tfstate.backup
+**/.terraform*

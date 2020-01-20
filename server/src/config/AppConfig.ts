@@ -10,10 +10,10 @@ export interface IAppConfig {
 
 export class AwsConfigProvider implements IAppConfig {
     GetGoogleApiKey(): Promise<string> {
-        return this.paramStore.getValue('dev-rs-maps-api-key', false);
+        return this.paramStore.getValue('tfdev-google-maps-key', false);
     }
     get EnableCors() : boolean { return false; }
-    get Port(): number { return 3000; };
+    get Port(): number { return process.env.PORT ? +process.env.PORT : 3000; };
     get PersistenceMode(): string { return "AWS" };
 
     private readonly paramStore = new AwsParameterStoreConfig();

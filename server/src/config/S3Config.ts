@@ -6,7 +6,7 @@ export interface IS3Config {
 
 export class S3Config extends AwsParameterStoreConfig implements IS3Config {
     async getBucketName(): Promise<string> {
-        return this.getValue('dev-rs-s3-name', false);
+        return this.getValue('tfdev-s3-name', false);
     }    
 
     constructor() {
