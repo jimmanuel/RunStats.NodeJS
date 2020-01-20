@@ -1,6 +1,6 @@
 resource "aws_lb_target_group" "tfdev-tg-rswebapp" {
     name = "tg-tfdev-rswebapp"
-    port = 8080
+    port = 3000
     protocol = "HTTP"
     vpc_id = aws_vpc.tfdev-runstats.id
     deregistration_delay = 15

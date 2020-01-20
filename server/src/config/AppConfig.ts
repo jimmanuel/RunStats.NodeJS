@@ -13,7 +13,7 @@ export class AwsConfigProvider implements IAppConfig {
         return this.paramStore.getValue('dev-rs-maps-api-key', false);
     }
     get EnableCors() : boolean { return false; }
-    get Port(): number { return 8080; };
+    get Port(): number { return 3000; };
     get PersistenceMode(): string { return "AWS" };
 
     private readonly paramStore = new AwsParameterStoreConfig();
