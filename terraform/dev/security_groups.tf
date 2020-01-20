@@ -4,7 +4,6 @@ resource "aws_security_group" "tfdev-sg-rs-alb" {
     vpc_id      = aws_vpc.tfdev-runstats.id
 
     ingress {
-        # TLS (change to whatever ports you need)
         from_port   = 443
         to_port     = 443
         protocol    = "tcp"
@@ -19,10 +18,17 @@ resource "aws_security_group" "tfdev-sg-rs-webapp" {
     vpc_id      = aws_vpc.tfdev-runstats.id
 
     ingress {
-        from_port   = 80
-        to_port     = 80
-        protocol    = "tcp"
+        from_port   = 0
+        to_port     = 0
+        protocol    = "-1"
         security_groups = [ aws_security_group.tfdev-sg-rs-alb.id ]
+    }
+
+    ingress {
+        from_port   = 8080
+        to_port     = 8080
+        protocol    = "tcp"
+        cidr_blocks = [ "0.0.0.0/0" ]
     }
 
     ingress {

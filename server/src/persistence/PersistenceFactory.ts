@@ -14,8 +14,13 @@ export interface IPersistenceFactory {
 
 export class AwsPersistenceFactory implements IPersistenceFactory {
     
-    init(): Promise<void> {
-        return this.actMetaRepo.ping();
+    async init(): Promise<void> {
+        try {
+            await this.actMetaRepo.ping();
+        } catch (error) {
+            // we expect this to fail
+        }
+
     }
 
     getDataPointRepo(): IDataPointRepository {
