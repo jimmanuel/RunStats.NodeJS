@@ -1,7 +1,7 @@
-resource "aws_security_group" "tfdev-sg-rs-alb" {
-    name        = "tfdev-sg-rs-alb"
+resource "aws_security_group" "sg-rs-alb" {
+    name        = "${var.env_prefix}-sg-rs-alb"
     description = "SG for the RunStats ALB"
-    vpc_id      = aws_vpc.tfdev-runstats.id
+    vpc_id      = aws_vpc.runstatsjs.id
 
     ingress {
         from_port   = 443
@@ -19,16 +19,16 @@ resource "aws_security_group" "tfdev-sg-rs-alb" {
 }
 
 
-resource "aws_security_group" "tfdev-sg-rs-webapp" {
-    name        = "tfdev-sg-rs-webapp"
+resource "aws_security_group" "sg-rs-webapp" {
+    name        = "${var.env_prefix}-sg-rs-webapp"
     description = "security group for the Run Stats web tier"
-    vpc_id      = aws_vpc.tfdev-runstats.id
+    vpc_id      = aws_vpc.runstatsjs.id
 
     ingress {
         from_port   = 3000
         to_port     = 3000
         protocol    = "tcp"
-        security_groups = [ aws_security_group.tfdev-sg-rs-alb.id ]
+        security_groups = [ aws_security_group.sg-rs-alb.id ]
     }
 
     ingress {
@@ -47,15 +47,15 @@ resource "aws_security_group" "tfdev-sg-rs-webapp" {
 }
 
 
-resource "aws_security_group" "tfdev-sg-rs-rds" {
-    name        = "tfdev-sg-rs-rds"
+resource "aws_security_group" "sg-rs-rds" {
+    name        = "${var.env_prefix}-sg-rs-rds"
     description = "secuirty group for the RunStats database tier"
-    vpc_id      = aws_vpc.tfdev-runstats.id
+    vpc_id      = aws_vpc.runstatsjs.id
 
     ingress {
         from_port   = 3306
         to_port     = 3306
         protocol    = "tcp"
-        security_groups = [ aws_security_group.tfdev-sg-rs-webapp.id ]
+        security_groups = [ aws_security_group.sg-rs-webapp.id ]
     }
 }

@@ -1,12 +1,8 @@
-resource "aws_lb" "tfdev-alb-rs" {
-    name = "tfdev-alb-rs"
+resource "aws_lb" "alb-rs" {
+    name = "${var.env_prefix}-alb-rs"
     internal = false
     load_balancer_type = "application"
 
-    security_groups = [ aws_security_group.tfdev-sg-rs-alb.id ]
-    subnets = [ aws_subnet.tfdev-rs-subnet.id, aws_subnet.tfdev-rs-subnet-alt.id ]
-
-    tags = {
-        Environment = "development"
-    }
+    security_groups = [ aws_security_group.sg-rs-alb.id ]
+    subnets = [ aws_subnet.rs-subnet.id, aws_subnet.rs-subnet-alt.id ]
 }

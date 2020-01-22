@@ -1,3 +1,3 @@
-resource "aws_internet_gateway" "tfdev-igw" {
-    vpc_id = aws_vpc.tfdev-runstats.id
+resource "aws_internet_gateway" "igw-rs" {
+    vpc_id = aws_vpc.runstatsjs.id
 }

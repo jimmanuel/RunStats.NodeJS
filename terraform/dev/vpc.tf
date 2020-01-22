@@ -1,7 +1,7 @@
-resource "aws_vpc" "tfdev-runstats" {
+resource "aws_vpc" "runstatsjs" {
     cidr_block = "10.0.0.0/16"
     
     tags = {
-        Name = "tfdev-runstats"
+        Name = "${var.env_prefix}-runstats"
     }
 }

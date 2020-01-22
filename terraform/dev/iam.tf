@@ -1,5 +1,5 @@
-resource "aws_iam_role" "tfdev-iamrole-webapp" {
-    name = "tfdev-iamrole-webapp"
+resource "aws_iam_role" "rs-iamrole-webapp" {
+    name = "${var.env_prefix}-iamrole-webapp"
     path = "/"
     assume_role_policy = <<EOF
 {
@@ -18,9 +18,9 @@ resource "aws_iam_role" "tfdev-iamrole-webapp" {
     EOF
 }
 
-resource "aws_iam_role_policy" "tfdev-policy-rsweb-s3access" {
-    name = "tfdev-policy-rsweb-s3access"
-    role = aws_iam_role.tfdev-iamrole-webapp.id
+resource "aws_iam_role_policy" "rs-policy-rsweb-s3access" {
+    name = "${var.env_prefix}-policy-rsweb-s3access"
+    role = aws_iam_role.rs-iamrole-webapp.id
 
     policy = <<EOF
 {
@@ -35,7 +35,7 @@ resource "aws_iam_role_policy" "tfdev-policy-rsweb-s3access" {
                 "s3:Put*",
                 "s3:Delete*"
             ],
-            "Resource": "arn:aws:s3:::tfdev-rs-data/*"
+            "Resource": "arn:aws:s3:::${var.s3_bucket_name}/*"
         },
         {
             "Effect": "Allow",
@@ -50,9 +50,9 @@ resource "aws_iam_role_policy" "tfdev-policy-rsweb-s3access" {
 }
 
 
-resource "aws_iam_role_policy" "tfdev-policy-rsweb-builddropaccess" {
-    name = "tfdev-policy-rsweb-builddropaccess"
-    role = aws_iam_role.tfdev-iamrole-webapp.id
+resource "aws_iam_role_policy" "rs-policy-rsweb-builddropaccess" {
+    name = "${var.env_prefix}-policy-rsweb-builddropaccess"
+    role = aws_iam_role.rs-iamrole-webapp.id
 
     policy = <<EOF
 {
@@ -80,9 +80,9 @@ resource "aws_iam_role_policy" "tfdev-policy-rsweb-builddropaccess" {
 }
 
 
-resource "aws_iam_role_policy" "tfdev-policy-rsweb-ssmaccess" {
-    name = "tfdev-policy-rsweb-ssmaccess"
-    role = aws_iam_role.tfdev-iamrole-webapp.id
+resource "aws_iam_role_policy" "rs-policy-rsweb-ssmaccess" {
+    name = "${var.env_prefix}-policy-rsweb-ssmaccess"
+    role = aws_iam_role.rs-iamrole-webapp.id
 
     policy = <<EOF
 {
@@ -92,7 +92,7 @@ resource "aws_iam_role_policy" "tfdev-policy-rsweb-ssmaccess" {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": "ssm:*",
-            "Resource": "arn:aws:ssm:*:*:*"
+            "Resource": "arn:aws:ssm:*:*:/${var.env_prefix}/*"
         }
     ]
 }
@@ -100,7 +100,7 @@ resource "aws_iam_role_policy" "tfdev-policy-rsweb-ssmaccess" {
 }
 
 
-resource "aws_iam_instance_profile" "tfdev-rswebapp-instance-profile" {
-    name = "tfdev-rswebapp-instance-profile"
-    role = aws_iam_role.tfdev-iamrole-webapp.name
+resource "aws_iam_instance_profile" "rs-rswebapp-instance-profile" {
+    name = "${var.env_prefix}-rswebapp-instance-profile"
+    role = aws_iam_role.rs-iamrole-webapp.name
 }
