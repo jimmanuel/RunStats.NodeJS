@@ -6,6 +6,10 @@ resource "aws_instance" "i-rswebapp" {
     iam_instance_profile = aws_iam_instance_profile.rs-rswebapp-instance-profile.name
     key_name = "${var.env_prefix}-webapp"
     associate_public_ip_address = true
+
+    tags = {
+        AppName = var.env_prefix
+    }
 }
 
 resource "aws_lb_target_group_attachment" "att-rsweb" {

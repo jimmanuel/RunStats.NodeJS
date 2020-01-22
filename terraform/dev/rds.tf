@@ -1,6 +1,10 @@
 resource "aws_db_subnet_group" "rds-subnet-group" {
     name       = "${var.env_prefix}-rds-subnet-group"
     subnet_ids = [ aws_subnet.rs-subnet.id, aws_subnet.rs-subnet-alt.id ]
+
+    tags = {
+        AppName = var.env_prefix
+    }
 }
 
 resource "aws_db_instance" "rs-mysql" {
@@ -16,4 +20,8 @@ resource "aws_db_instance" "rs-mysql" {
     db_subnet_group_name = aws_db_subnet_group.rds-subnet-group.name
     vpc_security_group_ids = [ aws_security_group.sg-rs-rds.id ]
     skip_final_snapshot = true
+
+    tags = {
+        AppName = var.env_prefix
+    }
 }

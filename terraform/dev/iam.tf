@@ -16,6 +16,10 @@ resource "aws_iam_role" "rs-iamrole-webapp" {
   ]
 }
     EOF
+
+    tags = {
+        AppName = var.env_prefix
+    }
 }
 
 resource "aws_iam_role_policy" "rs-policy-rsweb-s3access" {

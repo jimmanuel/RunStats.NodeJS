@@ -9,6 +9,10 @@ resource "aws_s3_bucket" "s3-rs-data" {
             }
         }
     }
+
+    tags = {
+        AppName = var.env_prefix
+    }
 }
 
 resource "aws_s3_bucket_public_access_block" "s3-rs-data-public-block" {

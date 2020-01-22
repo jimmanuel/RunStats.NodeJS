@@ -3,5 +3,6 @@ resource "aws_vpc" "runstatsjs" {
     
     tags = {
         Name = "${var.env_prefix}-runstats"
+        AppName = var.env_prefix
     }
 }

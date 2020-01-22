@@ -16,6 +16,10 @@ resource "aws_security_group" "sg-rs-alb" {
         protocol    = -1
         cidr_blocks = [ "0.0.0.0/0" ]
     }
+
+    tags = {
+        AppName = var.env_prefix
+    }
 }
 
 
@@ -44,6 +48,10 @@ resource "aws_security_group" "sg-rs-webapp" {
         protocol = -1
         cidr_blocks = [ "0.0.0.0/0" ]
     }
+
+    tags = {
+        AppName = var.env_prefix
+    }
 }
 
 
@@ -57,5 +65,9 @@ resource "aws_security_group" "sg-rs-rds" {
         to_port     = 3306
         protocol    = "tcp"
         security_groups = [ aws_security_group.sg-rs-webapp.id ]
+    }
+
+    tags = {
+        AppName = var.env_prefix
     }
 }

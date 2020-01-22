@@ -5,4 +5,8 @@ resource "aws_default_route_table" "rs-route-table" {
         cidr_block = "10.0.0.0/0"
         gateway_id = aws_internet_gateway.igw-rs.id
     }
+
+    tags = {
+        AppName = var.env_prefix
+    }
 }
