@@ -19,7 +19,7 @@ class App {
     if (process.env.MODE == 'LOCAL') {
       this.appConfig = new LocalConfigProvider();
     } else {
-      this.appConfig = new AwsConfigProvider();
+      this.appConfig = new AwsConfigProvider(Logger.create);
     }
 
     let persistenceFactory = this.appConfig.getPersistenceFactory();

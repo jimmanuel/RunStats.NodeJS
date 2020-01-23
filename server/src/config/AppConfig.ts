@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import { IMySqlConfig } from './MySqlConfig';
 import { IS3Config } from './S3Config';
 import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from "../persistence/PersistenceFactory";
+import { LogFactory } from "../domain/Logger";
 
 export interface IAppConfig {
     EnableCors: boolean;
@@ -36,10 +37,13 @@ export class AwsConfigProvider implements IAppConfig, IAwsConfig {
     get Port(): number { return process.env.PORT ? +process.env.PORT : 3000; };
     
     getPersistenceFactory() : IPersistenceFactory {
-        return new AwsPersistenceFactory(this);
+        return new AwsPersistenceFactory(this.logFactory, this);
     }
 
     private readonly paramStore = new AwsParameterStoreConfig();
+
+    public constructor(private logFactory : LogFactory) {
+    }
 }
 
 export class LocalConfigProvider implements IAppConfig {

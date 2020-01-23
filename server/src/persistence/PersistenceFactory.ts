@@ -1,7 +1,7 @@
 import { IDataPointRepository, DataPointRepository, InMemoryDataPointRepo } from "./DataPointRepository";
 import { IActivityMetadataRepository, ActivityMetadataRepository, InMemoryActivityMetadataRepo } from "./ActivityMetadataRepository";
 import { MySqlRepoBase } from "./MySqlRepoBase";
-import { Logger } from "../domain/Logger";
+import { Logger, LogFactory, ILog } from "../domain/Logger";
 import { S3Bucket } from "./S3Bucket";
 import { IAwsConfig } from "../config/AppConfig";
 
@@ -18,6 +18,7 @@ export class AwsPersistenceFactory implements IPersistenceFactory {
             await this.actMetaRepo.ping();
         } catch (error) {
             // we expect this to fail
+            this.logger.debug(JSON.stringify(error))
         }
 
     }
@@ -32,9 +33,11 @@ export class AwsPersistenceFactory implements IPersistenceFactory {
 
     private readonly dataPointRepo : IDataPointRepository;
     private readonly actMetaRepo : IActivityMetadataRepository;
+    private readonly logger : ILog;
 
-    public constructor(appConfig : IAwsConfig) {
+    public constructor(logFactory: LogFactory, appConfig : IAwsConfig) {
         MySqlRepoBase.init(appConfig);
+        this.logger = logFactory('AWS Persistence Factory');
         const s3Factory = async () => new S3Bucket(await appConfig.getBucketName());
         this.actMetaRepo = new ActivityMetadataRepository(Logger.create);
         this.dataPointRepo = new DataPointRepository(Logger.create, s3Factory);
