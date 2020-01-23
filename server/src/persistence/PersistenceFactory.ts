@@ -1,10 +1,9 @@
 import { IDataPointRepository, DataPointRepository, InMemoryDataPointRepo } from "./DataPointRepository";
 import { IActivityMetadataRepository, ActivityMetadataRepository, InMemoryActivityMetadataRepo } from "./ActivityMetadataRepository";
 import { MySqlRepoBase } from "./MySqlRepoBase";
-import { MySqlConfig } from "../config/MySqlConfig";
 import { Logger } from "../domain/Logger";
-import { S3Config } from "../config/S3Config";
 import { S3Bucket } from "./S3Bucket";
+import { IAwsConfig } from "../config/AppConfig";
 
 export interface IPersistenceFactory {
     getDataPointRepo() : IDataPointRepository;
@@ -34,11 +33,9 @@ export class AwsPersistenceFactory implements IPersistenceFactory {
     private readonly dataPointRepo : IDataPointRepository;
     private readonly actMetaRepo : IActivityMetadataRepository;
 
-    public constructor() {
-        const dbConfig = new MySqlConfig();
-        MySqlRepoBase.init(dbConfig);
-        const s3Config = new S3Config();
-        const s3Factory = async () => new S3Bucket(await s3Config.getBucketName());
+    public constructor(appConfig : IAwsConfig) {
+        MySqlRepoBase.init(appConfig);
+        const s3Factory = async () => new S3Bucket(await appConfig.getBucketName());
         this.actMetaRepo = new ActivityMetadataRepository(Logger.create);
         this.dataPointRepo = new DataPointRepository(Logger.create, s3Factory);
     }

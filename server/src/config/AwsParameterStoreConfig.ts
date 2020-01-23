@@ -2,17 +2,23 @@ import * as AWS from 'aws-sdk';
 
 export class AwsParameterStoreConfig {
     
+    get EnvPrefix() : string {
+        return process.env.AWS_ENV ? process.env.AWS_ENV : "ENV_IS_UNSET";
+    }
+    
     public async getValue(name:string, withDecryption: boolean) : Promise<string> {
-        const value = this.valueCache.get(name);
+        
+        const envSpecificName = `/${this.EnvPrefix}/name`
+        const value = this.valueCache.get(envSpecificName);
         if (value) {
             return value;
         }
 
         try {
             const ssm = new AWS.SSM({ region: this.region });
-            const result = await ssm.getParameter({ Name: name, WithDecryption: withDecryption}).promise();
+            const result = await ssm.getParameter({ Name: envSpecificName, WithDecryption: withDecryption}).promise();
 
-            this.valueCache.set(name, result.Parameter.Value);
+            this.valueCache.set(envSpecificName, result.Parameter.Value);
 
             return result.Parameter.Value;
         }

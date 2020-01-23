@@ -3,7 +3,7 @@ import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
 import { Logger, ILog } from './domain/Logger';
 import { GpxParser } from './domain/GpxParser';
 import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from './persistence/PersistenceFactory';
-import { IAppConfig, LocalConfigProvider, AwsConfigProvider } from './config/AppConfig';
+import { IAppConfig, LocalConfigProvider, AwsConfigProvider, IAwsConfig } from './config/AppConfig';
 import { IConfigRouter, ConfigRouter } from './routes/ConfigRouter';
 
 
@@ -22,13 +22,7 @@ class App {
       this.appConfig = new AwsConfigProvider();
     }
 
-    let persistenceFactory : IPersistenceFactory;
-    if (this.appConfig.PersistenceMode == 'TRANSIENT') {
-      persistenceFactory = new InMemoryPersistenceFactory();
-    } else {
-      persistenceFactory = new AwsPersistenceFactory();
-    }
-
+    let persistenceFactory = this.appConfig.getPersistenceFactory();
     persistenceFactory.init();
 
     this.configRouter = new ConfigRouter(Logger.create, this.appConfig);
@@ -78,8 +72,6 @@ class App {
     
       return this.logger.info(`server is listening on ${this.appConfig.Port}`)
     })
-
-    this.logger.debug(`GOOGLE KEY: ${await this.appConfig.GetGoogleApiKey()}`);
   }
 }
 
