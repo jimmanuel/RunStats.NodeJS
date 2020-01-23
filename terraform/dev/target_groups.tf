@@ -26,7 +26,7 @@ resource "aws_lb_listener" "albl-rswebtier" {
     port = 443
     protocol = "HTTPS"
     ssl_policy = "ELBSecurityPolicy-TLS-1-2-2017-01"
-    certificate_arn = var.ssl_cert_arn
+    certificate_arn = data.aws_acm_certificate.acm_rs_cert.arn
 
     default_action {
         type = "forward"

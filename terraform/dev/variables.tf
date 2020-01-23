@@ -18,10 +18,6 @@ variable "google_maps_api_key" {
     type = string
 }
 
-variable "ssl_cert_arn" {
-    type = string
-}
-
-variable "hosted_zone_id" {
+variable "app_url" {
     type = string
 }

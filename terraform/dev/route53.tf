@@ -1,6 +1,11 @@
+data "aws_route53_zone" "rs-zone" {
+  name         = "jlabar.us."
+  private_zone = false
+}
+
 resource "aws_route53_record" "rs-alias" {
-    zone_id = var.hosted_zone_id
-    name = "rs.${var.env_prefix}"
+    zone_id = data.aws_route53_zone.rs-zone.zone_id
+    name = var.app_url
     type = "A"
 
     alias {
