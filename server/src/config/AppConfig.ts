@@ -1,6 +1,6 @@
 import { AwsParameterStoreConfig } from "./AwsParameterStoreConfig";
 import * as dotenv from 'dotenv';
-import { IMySqlConfig } from './MySqlConfig';
+import { IRdsConfig } from './RdsConfig';
 import { IS3Config } from './S3Config';
 import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from "../persistence/PersistenceFactory";
 import { LogFactory } from "../domain/Logger";
@@ -12,7 +12,7 @@ export interface IAppConfig {
     getPersistenceFactory() : IPersistenceFactory;
 }
 
-export interface IAwsConfig extends IMySqlConfig, IS3Config {
+export interface IAwsConfig extends IRdsConfig, IS3Config {
 }
 
 export class AwsConfigProvider implements IAppConfig, IAwsConfig {

@@ -1,0 +1,21 @@
+{
+  "name": "rs-db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "rm -rf ./app/*; node_modules/typescript/bin/tsc; mkdir ./app/schema; cp ./schema/* ./app/schema/",
+    "start": "node ./app/index.js"
+  },
+  "author": "James LaBar",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.609.0",
+    "dotenv": "^8.2.0",
+    "pg": "^7.17.1",
+    "typescript": "^3.7.5"
+  },
+  "devDependencies": {
+    "@types/pg": "^7.14.1"
+  }
+}

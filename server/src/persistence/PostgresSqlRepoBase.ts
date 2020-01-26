@@ -1,24 +1,23 @@
 import { IRdsConfig } from "../config/RdsConfig";
-import * as mysql from 'promise-mysql';
+import * as pg from 'pg';
 import { ILog } from "../domain/Logger";
 
-export class MySqlRepoBase {
+export class PostgresSqlRepoBase {
     
     public static async init(mySqlConfig: IRdsConfig) : Promise<void> {
-        this.pool = await mysql.createPool(
-            {
+        this.pool = new pg.Pool({ 
                 password: await mySqlConfig.getPassword(),
                 user: await mySqlConfig.getUsername(),
                 host: await mySqlConfig.getHostname(),
-                connectionLimit: 50,
-                
+                connectionTimeoutMillis: 5 * 1000,
+                query_timeout: 5 * 1000                
             });
     }
 
-    protected async query<T>(action: (conn: mysql.Connection) => Promise<T>) : Promise<T> {
-        let conn : mysql.PoolConnection;
+    protected async query<T>(action: (conn: pg.PoolClient) => Promise<T>) : Promise<T> {
+        let conn : pg.PoolClient;
         try {
-            conn = await MySqlRepoBase.pool.getConnection();
+            conn = await PostgresSqlRepoBase.pool.connect()
             return action(conn);
         } 
         catch(error) {
@@ -27,12 +26,12 @@ export class MySqlRepoBase {
         }
         finally {
             if (conn) {
-                MySqlRepoBase.pool.releaseConnection(conn);
+                conn.release();
             }
         }
     }
 
-    private static pool: mysql.Pool;
+    private static pool: pg.Pool;
     protected readonly logger: ILog;
 
     constructor(log: ILog) {

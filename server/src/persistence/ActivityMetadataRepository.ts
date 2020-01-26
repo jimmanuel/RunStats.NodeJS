@@ -1,11 +1,11 @@
-import { LogFactory, ILog } from "../domain/Logger";
-import { MySqlRepoBase } from "./MySqlRepoBase";
-import {format } from 'mysql'
+import { LogFactory } from "../domain/Logger";
+import { PostgresSqlRepoBase } from "./PostgresSqlRepoBase";
 import { RunActivity, IActivityMetadata } from "../domain/RunActivity";
 import { ActivityToken } from "../domain/ActivityToken";
 import * as uuid from 'uuid';
 import { ActivityExistsError } from "../domain/ActivityExistsError";
 import { ActivityNotFoundException } from "../domain/ActivityNotFoundException";
+import { QueryResult } from "pg";
 
 export interface IActivityMetadataRepository {
     ping() : Promise<void>;
@@ -15,34 +15,31 @@ export interface IActivityMetadataRepository {
     getAllMetadata() : Promise<IActivityMetadata[]>;
 }
 
-export class ActivityMetadataRepository extends MySqlRepoBase implements IActivityMetadataRepository {
+export class ActivityMetadataRepository extends PostgresSqlRepoBase implements IActivityMetadataRepository {
     
     public async ping(): Promise<void> {
         return this.query(async conn => {
-            const sql = format('select top 1 * from RunStats.ActivityMetadata', []);
-            await conn.query(sql);
+            await conn.query('select top 1 * from RunStats.ActivityMetadata');
             return;
         });
     }
     
     async deleteActivity(id: number): Promise<void> {
         return this.query(async conn => {
-            const sql = format('delete from RunStats.ActivityMetadata where ID = ?', [id]);
-            await conn.query(sql);
+            await conn.query('delete from RunStats.ActivityMetadata where ID = ?', [id]);
             return;
         });
     }
     
     public async getActivityUUID(id: number) : Promise<string> {
         return this.query(async conn => {
-            const sql = format('select UUID from RunStats.ActivityMetadata where ID = ?', [id]);
-            const result : Array<any> = await conn.query(sql);
+            const result : QueryResult<any> = await conn.query('select UUID from RunStats.ActivityMetadata where ID = ?', [id]);
             
-            if (result.length == 0) {
+            if (result.rowCount == 0) {
                 throw new ActivityNotFoundException();
             } 
             
-            if (result.length > 1) {
+            if (result.rowCount > 1) {
                 throw new ActivityNotFoundException();
             }
 
@@ -52,9 +49,8 @@ export class ActivityMetadataRepository extends MySqlRepoBase implements IActivi
     
     public async getAllMetadata(): Promise<IActivityMetadata[]> {
         return this.query(async conn => {
-            const sql = 'select * from RunStats.ActivityMetadata'
-            const result : Array<any> = await conn.query(sql);
-            return result.map(x => { return { 
+            const result : QueryResult<any> = await conn.query('select * from RunStats.ActivityMetadata');
+            return result.rows.map(x => { return { 
                 id: x.ID, 
                 distanceMeters: x.DistanceMeters,
                 duration: x.DurationSeconds,
@@ -65,9 +61,8 @@ export class ActivityMetadataRepository extends MySqlRepoBase implements IActivi
     
     private async activityExists(startTime: number) : Promise<boolean> {
         return this.query(async conn => {
-            const sql = format('select StartTime from RunStats.ActivityMetadata where StartTime = ?', [startTime])
-            const result = await conn.query(sql);
-            return result.length > 0;
+            const result = await conn.query('select StartTime from RunStats.ActivityMetadata where StartTime = ?', [startTime]);
+            return result.rowCount > 0;
         });
     }
 
@@ -81,36 +76,24 @@ export class ActivityMetadataRepository extends MySqlRepoBase implements IActivi
 
             const key = uuid.v4();
 
-            const insertSql = format('insert into RunStats.ActivityMetadata (DistanceMeters, DurationSeconds, StartTime, UUID) values (?, ?, ?, ?)', 
+            const result = await conn.query('insert into RunStats.ActivityMetadata (DistanceMeters, DurationSeconds, StartTime, UUID) values (?, ?, ?, ?)', 
             [
                 activity.distanceMeters,
                 activity.duration,
                 activity.epochStartTime,
                 key
             ]);
-
-            const result = await conn.query(insertSql);
             
-            return new ActivityToken(result.insertId, key);
+            return new ActivityToken(result.oid, key);
         });
     }
     
-    public async printInfo(): Promise<void> {
-
-        return this.query(async conn => {
-            const result = await conn.query(format('SELECT table_name FROM information_schema.tables where TABLE_SCHEMA = ?', ['RunStats']));
-            this.logger.info(result);
-            return;
-        });
-    }
-
     constructor(logFactory: LogFactory) {
         
         super(logFactory('ActivityMetadataRepository'));
 
     }
 }
-
 
 class ActivityRecord {
     Id: number;

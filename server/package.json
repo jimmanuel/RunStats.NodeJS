@@ -37,6 +37,7 @@
     "@types/moment": "^2.13.0",
     "@types/mysql": "^2.15.8",
     "@types/node": "^12.12.11",
+    "@types/pg": "^7.14.1",
     "@types/uuid": "^3.4.6",
     "@types/xml2js": "^0.4.5",
     "jest": "^24.9.0",
@@ -50,6 +51,7 @@
     "express": "^4.17.1",
     "moment": "^2.24.0",
     "mysql": "^2.17.1",
+    "pg": "^7.17.1",
     "promise-mysql": "^4.1.1",
     "uuid": "^3.3.3",
     "xml2js": "^0.4.22"
