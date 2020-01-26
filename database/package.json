@@ -12,10 +12,12 @@
   "dependencies": {
     "aws-sdk": "^2.609.0",
     "dotenv": "^8.2.0",
+    "lodash": "^4.17.15",
     "pg": "^7.17.1",
     "typescript": "^3.7.5"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.149",
     "@types/pg": "^7.14.1"
   }
 }
