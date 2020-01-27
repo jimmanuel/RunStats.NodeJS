@@ -25,7 +25,7 @@ resource "aws_ssm_parameter" "ssm-db-server" {
     name = "/${var.env_prefix}/db-server"
     description = "name of the relational database host for runstats"
     type = "String"
-    value = aws_db_instance.rs-mysql.endpoint
+    value = aws_db_instance.rs-mysql.address
 
     tags = {
         AppName = var.env_prefix
