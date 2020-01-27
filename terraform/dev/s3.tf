@@ -1,6 +1,7 @@
 resource "aws_s3_bucket" "s3-rs-data" {
     bucket = var.s3_bucket_name
-    acl = "private"
+    acl = "private"                                                                                                                                                                                                                     
+    force_destroy = true
 
     server_side_encryption_configuration {
         rule {

@@ -7,6 +7,11 @@ resource "aws_instance" "i-rswebapp" {
     key_name = "${var.env_prefix}-webapp"
     associate_public_ip_address = true
 
+#    user_data = <<EOF
+#sudo bash
+#echo "AWS_ENV=${var.env_prefix}" >> /etc/environment
+#EOF
+
     tags = {
         AppName = var.env_prefix
     }
