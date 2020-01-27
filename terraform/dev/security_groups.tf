@@ -61,8 +61,8 @@ resource "aws_security_group" "sg-rs-rds" {
     vpc_id      = aws_vpc.runstatsjs.id
 
     ingress {
-        from_port   = 3306
-        to_port     = 3306
+        from_port   = 5432
+        to_port     = 5432
         protocol    = "tcp"
         security_groups = [ aws_security_group.sg-rs-webapp.id ]
     }

@@ -95,8 +95,8 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-ssmaccess" {
         {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
-            "Action": "ssm:*",
-            "Resource": "arn:aws:ssm:*:*:/${var.env_prefix}/*"
+            "Action": [ "ssm:*" ],
+            "Resource": "arn:aws:ssm:*:*:parameter/${var.env_prefix}/*"
         }
     ]
 }
