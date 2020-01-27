@@ -1,8 +1,8 @@
 create table RunStats.ActivityMetadata (
-    ID serial primary key,
-    DistanceMeters real not null,
-    DurationSeconds int not null,
-    StartTime int not null,
+    ID bigserial primary key,
+    DistanceMeters double precision not null,
+    DurationSeconds bigint not null,
+    StartTime bigint not null,
     UUID varchar(36) not null,
     UNIQUE(StartTime)
 );
