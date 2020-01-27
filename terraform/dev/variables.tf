@@ -21,3 +21,7 @@ variable "google_maps_api_key" {
 variable "app_url" {
     type = string
 }
+
+variable "db_name" {
+    type = string
+}
