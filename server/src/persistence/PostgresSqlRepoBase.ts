@@ -4,11 +4,12 @@ import { ILog } from "../domain/Logger";
 
 export class PostgresSqlRepoBase {
     
-    public static async init(mySqlConfig: IRdsConfig) : Promise<void> {
+    public static async init(rdsConfig: IRdsConfig) : Promise<void> {
         this.pool = new pg.Pool({ 
-                password: await mySqlConfig.getPassword(),
-                user: await mySqlConfig.getUsername(),
-                host: await mySqlConfig.getHostname(),
+                password: await rdsConfig.getPassword(),
+                user: await rdsConfig.getUsername(),
+                host: await rdsConfig.getHostname(),
+                database: await rdsConfig.getDbName(),
                 connectionTimeoutMillis: 5 * 1000,
                 query_timeout: 5 * 1000                
             });

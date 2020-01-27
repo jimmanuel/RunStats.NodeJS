@@ -1,13 +1,14 @@
 import { EnvironmentVarConfig } from "./IAppConfig";
 import { Pool } from "pg";
-import { LocalEnvLoader } from "./IEnvironmentLoader";
+import { LocalEnvLoader, AwsEnvLoader, IEnvironmentLoader } from "./IEnvironmentLoader";
 import * as _ from 'lodash'
 const path = require('path')
 const fs = require('fs')
 
 const func = async () => {
 
-    await new LocalEnvLoader().load();
+    const loader : IEnvironmentLoader = process.env.PLATFORM == 'AWS' ? new AwsEnvLoader() : new LocalEnvLoader()
+    await loader.load();
 
     const appConfig = new EnvironmentVarConfig();
 

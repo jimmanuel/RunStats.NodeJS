@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "compile": "rm -rf ./app/*; node_modules/typescript/bin/tsc; mkdir ./app/schema; cp ./schema/* ./app/schema/",
-    "start": "node ./app/index.js"
+    "debug": "node ./app/index.js",
+    "start": "PLATFORM=AWS AWS_ENV=tfdev node ./app/index.js",
+    "package": "npm run prune-prod; zip -r rs.db.debug.zip package*.json ./app/* ./node_modules/*"
   },
   "author": "James LaBar",
   "license": "ISC",

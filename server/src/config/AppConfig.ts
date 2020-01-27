@@ -32,6 +32,9 @@ export class AwsConfigProvider implements IAppConfig, IAwsConfig {
     getPassword(): Promise<string> {
         return this.paramStore.getValue(`db-pwd`, true);
     }
+    getDbName(): Promise<string> {
+        return this.paramStore.getValue(`db-name`, true);
+    }
 
     get EnableCors() : boolean { return false; }
     get Port(): number { return process.env.PORT ? +process.env.PORT : 3000; };

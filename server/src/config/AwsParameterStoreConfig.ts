@@ -8,7 +8,7 @@ export class AwsParameterStoreConfig {
     
     public async getValue(name:string, withDecryption: boolean) : Promise<string> {
         
-        const envSpecificName = `/${this.EnvPrefix}/name`
+        const envSpecificName = `/${this.EnvPrefix}/${name}`
         const value = this.valueCache.get(envSpecificName);
         if (value) {
             return value;

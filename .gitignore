@@ -2,6 +2,7 @@ node_modules
 app
 **/.env
 server/rs.debug.zip
+database/rs.db.debug.zip
 server/*.sh
 client/build
 publish.sh
