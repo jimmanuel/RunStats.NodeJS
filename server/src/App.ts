@@ -2,30 +2,21 @@ import * as express from 'express'
 import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
 import { Logger, ILog } from './domain/Logger';
 import { GpxParser } from './domain/GpxParser';
-import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from './persistence/PersistenceFactory';
-import { IAppConfig, LocalConfigProvider, AwsConfigProvider, IAwsConfig } from './config/AppConfig';
+import { IAppConfig, LocalConfigProvider, AwsConfigProvider } from './config/AppConfig';
 import { IConfigRouter, ConfigRouter } from './routes/ConfigRouter';
 
+let appConfig: IAppConfig = process.env.MODE == 'LOCAL' ? new LocalConfigProvider() : new AwsConfigProvider(Logger.create);
+let persistenceFactory = appConfig.getPersistenceFactory();
 
 class App {  
   public express;
   private readonly activityRouter : IActivityRouter;
   private readonly configRouter : IConfigRouter;
   private readonly logger : ILog = Logger.create('App');
-  private readonly appConfig: IAppConfig;
 
   constructor () {
 
-    if (process.env.MODE == 'LOCAL') {
-      this.appConfig = new LocalConfigProvider();
-    } else {
-      this.appConfig = new AwsConfigProvider(Logger.create);
-    }
-
-    let persistenceFactory = this.appConfig.getPersistenceFactory();
-    persistenceFactory.init();
-
-    this.configRouter = new ConfigRouter(Logger.create, this.appConfig);
+    this.configRouter = new ConfigRouter(Logger.create, appConfig);
     this.activityRouter = new ActivityRouter(Logger.create, persistenceFactory.getActivityRepo(), new GpxParser(), persistenceFactory.getDataPointRepo());
 
     this.logger.info('All Routers and necessary dependencies have been instantiated')
@@ -37,7 +28,7 @@ class App {
   private mountRoutes (): void {
     const router = express.Router();
 
-    if (this.appConfig.EnableCors) {
+    if (appConfig.EnableCors) {
       this.logger.info('enabling CORS')
       router.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
@@ -65,14 +56,18 @@ class App {
 
   public async start() : Promise<void> {
     
-    this.express.listen(this.appConfig.Port, (err) => {  
+    await persistenceFactory.init();
+    this.express.listen(appConfig.Port, (err) => {  
       if (err) {
         return this.logger.error(err)
       }
     
-      return this.logger.info(`server is listening on ${this.appConfig.Port}`)
+      return this.logger.info(`server is listening on ${appConfig.Port}`)
     })
   }
 }
+
+
+
 
 export default new App();  

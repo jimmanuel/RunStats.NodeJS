@@ -19,21 +19,21 @@ export class ActivityMetadataRepository extends PostgresSqlRepoBase implements I
     
     public async ping(): Promise<void> {
         return this.query(async conn => {
-            await conn.query('select top 1 * from RunStats.ActivityMetadata');
+            await conn.query('select * from RunStats.ActivityMetadata limit 1');
             return;
         });
     }
     
     async deleteActivity(id: number): Promise<void> {
         return this.query(async conn => {
-            await conn.query('delete from RunStats.ActivityMetadata where ID = ?', [id]);
+            await conn.query('delete from RunStats.ActivityMetadata where ID = $1', [id]);
             return;
         });
     }
     
     public async getActivityUUID(id: number) : Promise<string> {
         return this.query(async conn => {
-            const result : QueryResult<any> = await conn.query('select UUID from RunStats.ActivityMetadata where ID = ?', [id]);
+            const result : QueryResult<any> = await conn.query('select UUID from RunStats.ActivityMetadata where ID = $1', [id]);
             
             if (result.rowCount == 0) {
                 throw new ActivityNotFoundException();
@@ -61,7 +61,7 @@ export class ActivityMetadataRepository extends PostgresSqlRepoBase implements I
     
     private async activityExists(startTime: number) : Promise<boolean> {
         return this.query(async conn => {
-            const result = await conn.query('select StartTime from RunStats.ActivityMetadata where StartTime = ?', [startTime]);
+            const result = await conn.query('select StartTime from RunStats.ActivityMetadata where StartTime = $1', [startTime]);
             return result.rowCount > 0;
         });
     }
@@ -76,7 +76,7 @@ export class ActivityMetadataRepository extends PostgresSqlRepoBase implements I
 
             const key = uuid.v4();
 
-            const result = await conn.query('insert into RunStats.ActivityMetadata (DistanceMeters, DurationSeconds, StartTime, UUID) values (?, ?, ?, ?)', 
+            const result = await conn.query('insert into RunStats.ActivityMetadata (DistanceMeters, DurationSeconds, StartTime, UUID) values ($1, $2, $3, $4)', 
             [
                 activity.distanceMeters,
                 activity.duration,
