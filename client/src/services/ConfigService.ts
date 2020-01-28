@@ -2,14 +2,22 @@ import * as axios from 'axios';
 
 export interface IConfigService {
     getGoogleApiKey() : string;
+    getGoogleClientId() : string;
     loadValues() : Promise<void>;
 }
 
 interface IAppConfig {
     googleApiKey : string;
+    googleClientId: string;
 }
 
 export class ConfigService implements IConfigService {
+    getGoogleClientId(): string {
+        if (!this.appConfig) {
+            return '';
+        }
+        return this.appConfig.googleClientId;
+    }
     getGoogleApiKey(): string {
         if (!this.appConfig) {
             return '';

@@ -1,10 +1,12 @@
 import React, { RefObject } from 'react';
 import './AppHeader.css';
 import { IActivityService, ActivityService } from '../../services/ActivityService';
+import { GoogleBtn } from '../GoogleButton';
 
 interface AppHeaderProps {
   invokeRefresh : () => Promise<void>;
   headerDescription: string;
+  clientId: string;
 }
 
 class AppHeader extends React.Component<AppHeaderProps, any> {
@@ -67,6 +69,7 @@ class AppHeader extends React.Component<AppHeaderProps, any> {
         </div>
         <div className="Button-Table">
           <div className="Centerized-tablecell">
+            <GoogleBtn clientId={this.props.clientId}></GoogleBtn>
             <input ref={this.inputOpenFileRef} type="file" accept=".gpx" multiple style={{display:"none"}} onChange={this.fileChosen.bind(this)}/>
             <button className="Import-button" onClick={() => this.importFiles()}>Import File(s)</button>
           </div>

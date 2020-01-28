@@ -10,7 +10,11 @@ export interface IConfigRouter {
 export class ConfigRouter extends BaseRouter implements IConfigRouter {
     public async getConfig(req: Request, res: Response): Promise<void> {
         try {
-            res.json({googleApiKey: await this.appConfig.getGoogleApiKey()}).end();
+            res.json(
+                {
+                    googleApiKey: await this.appConfig.getGoogleApiKey(),
+                    googleClientId: await this.appConfig.getGoogleClientId()
+                }).end();
         } 
         catch (error) {
             this.handleError(res, error);

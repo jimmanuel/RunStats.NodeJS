@@ -36,7 +36,7 @@ class App extends React.Component<AppProps, AppState> {
 
     return (
     <div >
-      <AppHeader invokeRefresh={() => this.refresh()} headerDescription={headerDesc} />
+      <AppHeader invokeRefresh={() => this.refresh()} headerDescription={headerDesc} clientId={this.props.configService.getGoogleClientId()}/>
 
       <MapContent activities={acts} showOnHeader={x => this.showOnHeader(x)} apiKey={this.props.configService.getGoogleApiKey()}/>
     </div>)
