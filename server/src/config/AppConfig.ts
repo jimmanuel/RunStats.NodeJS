@@ -5,7 +5,11 @@ import { IS3Config } from './S3Config';
 import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from "../persistence/PersistenceFactory";
 import { LogFactory } from "../domain/Logger";
 
-export interface IAppConfig {
+export interface IJwtConfig {
+    getJwtSecret() : Promise<string>;
+}
+
+export interface IAppConfig extends IJwtConfig {
     getGoogleClientId() : Promise<string>;
     getGoogleClientSecret() : Promise<string>;
     EnableCors: boolean;
@@ -18,6 +22,9 @@ export interface IAwsConfig extends IRdsConfig, IS3Config {
 }
 
 export class AwsConfigProvider implements IAppConfig, IAwsConfig {
+    getJwtSecret(): Promise<string> {
+        return this.paramStore.getValue('jwt-secret', true);
+    }
     getGoogleClientSecret(): Promise<string> {
         return this.paramStore.getValue('google-auth-client-secret', true);
     }
@@ -57,6 +64,9 @@ export class AwsConfigProvider implements IAppConfig, IAwsConfig {
 }
 
 export class LocalConfigProvider implements IAppConfig {
+    async getJwtSecret(): Promise<string> {
+        return process.env.JWT_SECRET;
+    }
     
     async getGoogleClientSecret(): Promise<string> {
         return process.env.GOOGLE_AUTH_CLIENT_SECRET;
