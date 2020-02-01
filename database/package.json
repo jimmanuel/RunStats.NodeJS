@@ -6,8 +6,8 @@
   "scripts": {
     "compile": "rm -rf ./app/*; node_modules/typescript/bin/tsc; mkdir ./app/schema; cp ./schema/* ./app/schema/",
     "debug": "node ./app/index.js",
-    "start": "PLATFORM=AWS AWS_ENV=tfdev node ./app/index.js",
-    "package": "npm run prune-prod; zip -r rs.db.debug.zip package*.json ./app/* ./node_modules/*"
+    "start-aws": "PLATFORM=AWS node ./app/index.js",
+    "package": "npm run prune-prod; zip -r rs.db.zip package*.json ./app/* ./node_modules/*"
   },
   "author": "James LaBar",
   "license": "ISC",

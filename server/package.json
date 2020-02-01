@@ -15,7 +15,7 @@
     "prune-build-output": "rm -rf ./app/test",
     "prune-modules": "npm prune --prod",
     "prune-prod": "npm run prune-build-output; npm run prune-modules",
-    "package": "npm run prune-prod; zip -r rs.debug.zip package*.json ./app/* ./node_modules/*"
+    "package": "npm run prune-prod; zip -r rs.app.zip package*.json ./app/* ./node_modules/*"
   },
   "repository": {
     "type": "git",
@@ -49,6 +49,7 @@
     "bunyan": "^1.8.12",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "google-auth-library": "^5.9.2",
     "moment": "^2.24.0",
     "mysql": "^2.17.1",
     "pg": "^7.17.1",

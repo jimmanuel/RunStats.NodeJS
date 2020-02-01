@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom';
 import { GoogleLogin, GoogleLogout, GoogleLoginResponse, GoogleLoginResponseOffline } from 'react-google-login';
-
-
-const CLIENT_ID = '<your Client ID>';
+import { AuthService } from './../services/AuthService';
 
 interface IGoogleBtnProps {
     clientId: string;
@@ -42,6 +40,9 @@ export class GoogleBtn extends React.Component<IGoogleBtnProps, IGoogleBtnState>
         }
 
         if (response.accessToken) {
+
+            new AuthService().login(response.tokenId);
+
             this.setState(state => ({
                 isLoggedIn: true,
                 accessToken: response.accessToken

@@ -7,6 +7,7 @@ import { LogFactory } from "../domain/Logger";
 
 export interface IAppConfig {
     getGoogleClientId() : Promise<string>;
+    getGoogleClientSecret() : Promise<string>;
     EnableCors: boolean;
     Port: number;
     getGoogleApiKey(): Promise<string>;
@@ -17,8 +18,11 @@ export interface IAwsConfig extends IRdsConfig, IS3Config {
 }
 
 export class AwsConfigProvider implements IAppConfig, IAwsConfig {
+    getGoogleClientSecret(): Promise<string> {
+        return this.paramStore.getValue('google-auth-client-secret', true);
+    }
     getGoogleClientId(): Promise<string> {
-        return this.paramStore.getValue(`google-auth-client-id`, false);
+        return this.paramStore.getValue(`google-auth-client-id`, true);
     }    
     getGoogleApiKey(): Promise<string> {
         return this.paramStore.getValue(`google-maps-key`, false);
@@ -53,6 +57,11 @@ export class AwsConfigProvider implements IAppConfig, IAwsConfig {
 }
 
 export class LocalConfigProvider implements IAppConfig {
+    
+    async getGoogleClientSecret(): Promise<string> {
+        return process.env.GOOGLE_AUTH_CLIENT_SECRET;
+    }
+
     async getGoogleClientId(): Promise<string> {
         return process.env.GOOGLE_AUTH_CLIENT_ID;
     }

@@ -68,7 +68,18 @@ resource "aws_ssm_parameter" "ssm-google-maps-key" {
 resource "aws_ssm_parameter" "ssm-google-auth-client-id" {
     name = "/${var.env_prefix}/google-auth-client-id"
     description = "google client id for authentication"
-    type = "String"
+    type = "SecureString"
+    value = var.google_auth_client_id
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}
+
+resource "aws_ssm_parameter" "ssm-google-auth-client-secret" {
+    name = "/${var.env_prefix}/google-auth-client-secret"
+    description = "google client secret for authentication"
+    type = "SecureString"
     value = var.google_auth_client_id
 
     tags = {

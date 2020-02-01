@@ -1,8 +1,8 @@
 node_modules
 app
 **/.env
-server/rs.debug.zip
-database/rs.db.debug.zip
+server/rs.app.zip
+database/rs.db.zip
 server/*.sh
 client/build
 publish.sh

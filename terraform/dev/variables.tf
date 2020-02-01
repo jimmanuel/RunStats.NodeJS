@@ -22,6 +22,10 @@ variable "google_auth_client_id" {
     type = string
 }
 
+variable "google_auth_client_secret" {
+    type = string
+}
+
 variable "app_url" {
     type = string
 }
