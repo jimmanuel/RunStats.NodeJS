@@ -32,7 +32,7 @@ export class GoogleBtn extends React.Component<IGoogleBtnProps, IGoogleBtnState>
         return 'accessToken' in object;
     }
 
-    private login (response : GoogleLoginResponse | GoogleLoginResponseOffline) : void {
+    private async login (response : GoogleLoginResponse | GoogleLoginResponseOffline) : Promise<void>{
 
         console.log(JSON.stringify(response));
         if (!this.isOnlineReponse(response)) {
@@ -41,7 +41,7 @@ export class GoogleBtn extends React.Component<IGoogleBtnProps, IGoogleBtnState>
 
         if (response.accessToken) {
 
-            new AuthService().login(response.tokenId);
+            await new AuthService().login(response.tokenId);
 
             this.setState(state => ({
                 isLoggedIn: true,
@@ -87,8 +87,6 @@ export class GoogleBtn extends React.Component<IGoogleBtnProps, IGoogleBtnState>
                 responseType='code,token'
             />
             }
-            { this.state.accessToken ? <h5>Your Access Token: <br/><br/> { this.state.accessToken }</h5> : null }
-
         </div>
         )
     }

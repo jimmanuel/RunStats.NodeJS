@@ -48,6 +48,9 @@ export class ActivityRouter extends BaseRouter implements IActivityRouter {
 
     public async getActivity(req: Request, res: Response): Promise<void> {
         try {
+
+            this.logger.info(JSON.stringify(this.getUser(req)));
+
             const id : number = +req.params.id;
             const uuid = await this.activityRepo.getActivityUUID(id);
             res.json(await this.dataPointRepo.getDataPoints(uuid)).end();

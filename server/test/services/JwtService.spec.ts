@@ -12,7 +12,7 @@ describe ('JwtService', () => {
     describe('create jwt', () => {
         it ('should round trip JWTs', async () => {
             const googleToken : IGoogleAuthToken = {
-                sub: 5,
+                sub: '5',
                 email: 'bob@gmail.com'
             };
 
@@ -27,7 +27,7 @@ describe ('JwtService', () => {
 
         it('should throw with invalid tokens', async () => {
             const googleToken : IGoogleAuthToken = {
-                sub: 5,
+                sub: '5',
                 email: 'bob@gmail.com'
             };
 

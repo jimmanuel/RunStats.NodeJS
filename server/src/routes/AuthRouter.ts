@@ -3,6 +3,8 @@ import { OAuth2Client } from 'google-auth-library';
 import { LogFactory } from '../domain/Logger';
 import { IAppConfig } from '../config/AppConfig';
 import { BaseRouter } from './BaseRouter';
+import { IJwtService } from '../services/JwtService';
+import { IAuthService } from '../services/AuthService';
 
 export interface IAuthRouter {
     loginGoogle(req: Request, res: Response) : Promise<void>;
@@ -10,24 +12,37 @@ export interface IAuthRouter {
 
 export class AuthRouter extends BaseRouter implements IAuthRouter {
     async loginGoogle(req: Request, res: Response): Promise<void> {
-        console.log(req.body) //=> { accessToken: '...', tokenType: 'bearer', ... }
+        try {
+            const googleClient = new OAuth2Client(
+            { 
+                clientId: await this.appConfig.getGoogleClientId(), 
+                clientSecret: await this.appConfig.getGoogleClientSecret() 
+            });
+            const ticket = await googleClient.verifyIdToken({
+                idToken: req.body,
+                audience: undefined
+            });
+            const payload = ticket.getPayload();
+            
+            this.logger.debug(JSON.stringify(payload))
 
-        const otherCient = new OAuth2Client(
-        { 
-            clientId: await this.appConfig.getGoogleClientId(), 
-            clientSecret: await this.appConfig.getGoogleClientSecret() 
-        });
-        const ticket = await otherCient.verifyIdToken({
-            idToken: req.body,
-            audience: undefined
-        });
-        const payload = ticket.getPayload();
-        this.logger.info(JSON.stringify(payload))
+            const jwt = await this.jwtService.createJwt({
+                sub: payload.sub, 
+                email: payload.email
+            });
+            await this.authService.addAuthCookie(res, jwt);
+
+            res.status(200).end();
+        } catch (error) {
+            this.handleError(res, error);
+        }
     }
 
     constructor(
         logFactory : LogFactory,
-        private appConfig : IAppConfig) {
+        private appConfig : IAppConfig,
+        private jwtService : IJwtService,
+        private authService : IAuthService) {
             super(logFactory('Auth Router'));
     }
 }

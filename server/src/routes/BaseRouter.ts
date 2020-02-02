@@ -2,6 +2,8 @@ import { Request, Response } from 'express'
 import { ActivityNotFoundException } from '../domain/ActivityNotFoundException';
 import { ActivityExistsError } from '../domain/ActivityExistsError';
 import { ILog } from '../domain/Logger';
+import { IUserToken } from '../services/JwtService';
+import { UserRequest } from '../services/AuthService';
 
 export class BaseRouter {
 
@@ -20,5 +22,10 @@ export class BaseRouter {
         }
     }
     
+    protected getUser(req: Request) : IUserToken {
+        const userRequest = <UserRequest>req;
+        return userRequest.UserToken;
+    }
+
     protected constructor (protected logger: ILog) { }
 }

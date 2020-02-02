@@ -86,3 +86,25 @@ resource "aws_ssm_parameter" "ssm-google-auth-client-secret" {
         AppName = var.env_prefix
     }
 }
+
+resource "aws_ssm_parameter" "ssm-jwt-secret" {
+    name = "/${var.env_prefix}/jwt-secret"
+    description = "secret for signing jwts"
+    type = "SecureString"
+    value = var.jwt_secret
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}
+
+resource "aws_ssm_parameter" "ssm-cookie-domain" {
+    name = "/${var.env_prefix}/cookie-domain"
+    description = "the domain for cookies"
+    type = "String"
+    value = "${var.app_url}.jlabar.us"
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}

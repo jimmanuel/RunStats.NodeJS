@@ -9,7 +9,11 @@ export interface IJwtConfig {
     getJwtSecret() : Promise<string>;
 }
 
-export interface IAppConfig extends IJwtConfig {
+export interface ICookieConfig {
+    getCookieDomain() : Promise<string>;
+}
+
+export interface IAppConfig extends IJwtConfig, ICookieConfig {
     getGoogleClientId() : Promise<string>;
     getGoogleClientSecret() : Promise<string>;
     EnableCors: boolean;
@@ -22,6 +26,9 @@ export interface IAwsConfig extends IRdsConfig, IS3Config {
 }
 
 export class AwsConfigProvider implements IAppConfig, IAwsConfig {
+    getCookieDomain(): Promise<string> {
+        return this.paramStore.getValue('cookie-domain', false);
+    }
     getJwtSecret(): Promise<string> {
         return this.paramStore.getValue('jwt-secret', true);
     }
@@ -64,6 +71,9 @@ export class AwsConfigProvider implements IAppConfig, IAwsConfig {
 }
 
 export class LocalConfigProvider implements IAppConfig {
+    async getCookieDomain(): Promise<string> {
+        return process.env.COOKIE_DOMAIN;
+    }
     async getJwtSecret(): Promise<string> {
         return process.env.JWT_SECRET;
     }

@@ -11,11 +11,11 @@ export interface IGoogleAuthToken
 {
     // These six fields are included in all Google ID Tokens.
     iss?: string;
-    sub: number; // google's id for the user
+    sub: string; // google's id for the user
     azp?: string;
     aud?: string;
-    iat?: string;
-    exp?: string;
+    iat?: number;
+    exp?: number;
    
     // These seven fields are only included when the user has granted the profile and
     // email OAuth scopes to the application.
@@ -67,12 +67,11 @@ export class JwtService implements IJwtService {
         return (jwtToken.compact())
     }
 
-    private readonly algorithm = 'HS512';
     private readonly logger : ILog;
     constructor (
         logFactory : LogFactory, 
         private jwtConfig : IJwtConfig) {
 
-        this.logger = logFactory('JWT Factory');
+        this.logger = logFactory('JWT Service');
     }
 }
