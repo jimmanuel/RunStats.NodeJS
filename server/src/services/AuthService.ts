@@ -29,7 +29,7 @@ export class AuthService implements IAuthService {
             (<UserRequest>req).UserToken = user;
 
         } catch(error) {
-            this.logger.warn(JSON.stringify(error));
+            this.logger.warn(error);
             res.status(403).end();
             return;
         }
@@ -40,7 +40,7 @@ export class AuthService implements IAuthService {
     public async addAuthCookie(res: Response, jwt: string): Promise<void> {
         
         const domain = await this.cookieConfig.getCookieDomain();
-        res.cookie(this.cookieName, jwt, { secure: true, domain: `.${domain}`, maxAge: (12 * 60 * 60 * 1000) });
+        res.cookie(this.cookieName, jwt, { secure: true, domain: `.${domain}` });
     }
 
     private readonly cookieName : string = 'access_token';

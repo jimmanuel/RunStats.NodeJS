@@ -5,6 +5,7 @@ import { AuthService } from './../services/AuthService';
 
 interface IGoogleBtnProps {
     clientId: string;
+    invokeRefresh : () => Promise<void>;
 }
 
 interface IGoogleBtnState {
@@ -48,6 +49,8 @@ export class GoogleBtn extends React.Component<IGoogleBtnProps, IGoogleBtnState>
                 accessToken: response.accessToken
             }));
 
+            this.props.invokeRefresh();
+
         } else {
             console.log('no access token?')
         }
@@ -56,7 +59,7 @@ export class GoogleBtn extends React.Component<IGoogleBtnProps, IGoogleBtnState>
   private logout () : void {
     this.setState(state => ({
         isLoggedIn: false,
-      accessToken: ''
+        accessToken: ''
     }));
   }
 
@@ -68,17 +71,16 @@ export class GoogleBtn extends React.Component<IGoogleBtnProps, IGoogleBtnState>
         alert('Failed to log out')
     }
 
-    render() {
-        return (
-        <div>
-            { this.state.isLoggedIn ?
-            <GoogleLogout
+    render() { 
+        return (this.state.isLoggedIn ?
+            <GoogleLogout 
                 clientId={ this.props.clientId }
                 buttonText='Logout'
                 onLogoutSuccess={ this.logout }
                 onFailure={ this.handleLogoutFailure }
             >
-            </GoogleLogout>: <GoogleLogin
+            </GoogleLogout>: 
+            <GoogleLogin 
                 clientId={ this.props.clientId }
                 buttonText='Login'
                 onSuccess={ this.login }
@@ -86,8 +88,6 @@ export class GoogleBtn extends React.Component<IGoogleBtnProps, IGoogleBtnState>
                 cookiePolicy={ 'single_host_origin' }
                 responseType='code,token'
             />
-            }
-        </div>
         )
     }
 }

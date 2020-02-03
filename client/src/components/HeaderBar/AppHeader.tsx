@@ -68,8 +68,8 @@ class AppHeader extends React.Component<AppHeaderProps, any> {
           <label className="Description-Label">{this.props.headerDescription}</label>
         </div>
         <div className="Button-Table">
+          <GoogleBtn clientId={this.props.clientId} invokeRefresh={this.props.invokeRefresh}></GoogleBtn>
           <div className="Centerized-tablecell">
-            <GoogleBtn clientId={this.props.clientId}></GoogleBtn>
             <input ref={this.inputOpenFileRef} type="file" accept=".gpx" multiple style={{display:"none"}} onChange={this.fileChosen.bind(this)}/>
             <button className="Import-button" onClick={() => this.importFiles()}>Import File(s)</button>
           </div>
