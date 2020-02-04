@@ -30,21 +30,17 @@ const func = async () => {
         console.log(`Running script ${JSON.stringify(file)}`);
         const fileBuffer = fs.readFileSync(path.join(sqlPath, file))
         const client = await pool.connect();
-        console.log('client is connected');
         try {
             await client.query(fileBuffer.toString());
+            console.log(`Successfully Completed script ${JSON.stringify(file)}`);
         } finally {
-            console.log('closing client')
             client.release();
-            console.log('client is closed')
         }
 
 
     }
 
-    console.log('closing pool')
     await pool.end();
-    console.log('pool is closed')
 };
 
 func().then(() => console.log("complete"));

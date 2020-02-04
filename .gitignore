@@ -14,3 +14,4 @@ server/npm-debug.log
 **/terraform.tfstate.backup
 **/.terraform*
 **/*.tfvars
+database/resetLocalDb.sh
