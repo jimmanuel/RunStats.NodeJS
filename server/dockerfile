@@ -1,8 +1,9 @@
-FROM node:12
+FROM node:12-alpine
 
 WORKDIR /usr/src/app
-
 COPY package*.json ./
+
+RUN apk add --no-cache make gcc g++ python
 RUN npm ci --only=production
 
 COPY ./app/src/ .
