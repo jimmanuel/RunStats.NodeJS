@@ -63,7 +63,8 @@ class App {
         // authentication not needed
         router.options('*');
         router.post('/api/user/googletoken', genericTextHanlder, (req, res) => this.authRouter.loginGoogle(req, res));
-        router.get('/api/config', (req, res) => this.configRouter.getConfig(req, res))
+        router.get('/api/config', (req, res) => this.configRouter.getConfig(req, res));
+        router.get('/api/isonline', (req, res) => res.send(200).end());
         router.get('/*', express.static(__dirname + '/client'));
 
         this.express.use('/', router);
