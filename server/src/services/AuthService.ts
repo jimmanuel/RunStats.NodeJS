@@ -39,7 +39,7 @@ export class AuthService implements IAuthService {
 
     public async addAuthCookie(res: Response, jwt: string): Promise<void> {
         
-        const domain = await this.cookieConfig.getCookieDomain();
+        const domain = this.cookieConfig.CookieDomain;
         res.cookie(this.cookieName, jwt, { secure: true, domain: `.${domain}` });
     }
 

@@ -15,8 +15,8 @@ export class AuthRouter extends BaseRouter implements IAuthRouter {
         try {
             const googleClient = new OAuth2Client(
             { 
-                clientId: await this.appConfig.getGoogleClientId(), 
-                clientSecret: await this.appConfig.getGoogleClientSecret() 
+                clientId: this.appConfig.GoogleClientId, 
+                clientSecret: this.appConfig.GoogleClientSecret 
             });
             const ticket = await googleClient.verifyIdToken({
                 idToken: req.body,

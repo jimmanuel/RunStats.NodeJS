@@ -37,7 +37,7 @@ export class JwtService implements IJwtService {
 
     public async verify(jwtToken: string): Promise<IUserToken> {
         
-        const key =  await this.jwtConfig.getJwtSecret();
+        const key =  this.jwtConfig.JwtSecret;
 
         function myKeyResolver(kid, cb) {
             return cb(null, key);
@@ -61,7 +61,7 @@ export class JwtService implements IJwtService {
             email: token.email
         }
         
-        const jwtToken = njwt.create(claims, await this.jwtConfig.getJwtSecret());
+        const jwtToken = njwt.create(claims, this.jwtConfig.JwtSecret);
         jwtToken.setExpiration(new Date().getTime() + (24*60*60*1000));
         jwtToken.set
         return (jwtToken.compact())

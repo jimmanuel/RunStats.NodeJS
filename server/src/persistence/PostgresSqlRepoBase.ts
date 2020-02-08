@@ -6,10 +6,10 @@ export class PostgresSqlRepoBase {
     
     public static async init(rdsConfig: IRdsConfig) : Promise<void> {
         this.pool = new pg.Pool({ 
-                password: await rdsConfig.getPassword(),
-                user: await rdsConfig.getUsername(),
-                host: await rdsConfig.getHostname(),
-                database: await rdsConfig.getDbName(),
+                password: rdsConfig.Password,
+                user: rdsConfig.Username,
+                host: rdsConfig.Hostname,
+                database: rdsConfig.DbName,
                 connectionTimeoutMillis: 5 * 1000,
                 query_timeout: 5 * 1000                
             });

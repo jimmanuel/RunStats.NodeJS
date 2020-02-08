@@ -1,102 +1,70 @@
-import { AwsParameterStoreConfig } from "./AwsParameterStoreConfig";
-import * as dotenv from 'dotenv';
 import { IRdsConfig } from './RdsConfig';
 import { IS3Config } from './S3Config';
 import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from "../persistence/PersistenceFactory";
 import { LogFactory } from "../domain/Logger";
 
 export interface IJwtConfig {
-    getJwtSecret() : Promise<string>;
+    JwtSecret : string;
 }
 
 export interface ICookieConfig {
-    getCookieDomain() : Promise<string>;
+    CookieDomain : string;
 }
 
 export interface IAppConfig extends IJwtConfig, ICookieConfig {
-    getGoogleClientId() : Promise<string>;
-    getGoogleClientSecret() : Promise<string>;
+    GoogleClientId : string;
+    GoogleClientSecret : string;
     EnableCors: boolean;
     Port: number;
-    getGoogleApiKey(): Promise<string>;
+    GoogleApiKey: string;
     getPersistenceFactory() : IPersistenceFactory;
 }
 
 export interface IAwsConfig extends IRdsConfig, IS3Config {
 }
 
-export class AwsConfigProvider implements IAppConfig, IAwsConfig {
-    getCookieDomain(): Promise<string> {
-        return this.paramStore.getValue('cookie-domain', false);
+export class AppConfigImpl implements IAppConfig, IAwsConfig {
+    get CookieDomain(): string {
+        return process.env.COOKIE_DOMAIN;
     }
-    getJwtSecret(): Promise<string> {
-        return this.paramStore.getValue('jwt-secret', true);
+    get JwtSecret () : string {
+        return process.env.JWT_SECRET;
     }
-    getGoogleClientSecret(): Promise<string> {
-        return this.paramStore.getValue('google-auth-client-secret', true);
+    get GoogleClientSecret(): string {
+        return process.env.GOOGLE_AUTH_CLIENT_SECRET;
     }
-    getGoogleClientId(): Promise<string> {
-        return this.paramStore.getValue(`google-auth-client-id`, true);
+    get GoogleClientId(): string {
+        return process.env.GOOGLE_AUTH_CLIENT_ID;
     }    
-    getGoogleApiKey(): Promise<string> {
-        return this.paramStore.getValue(`google-maps-key`, false);
+    get GoogleApiKey(): string {
+        return process.env.GOOGLE_API_KEY;
     }
-    getBucketName(): Promise<string> {
-        return this.paramStore.getValue(`s3-name`, false);
+    get BucketName(): string {
+        return process.env.S3_BUCKET_NAME;
     } 
-    getHostname(): Promise<string> {
-        return this.paramStore.getValue(`db-server`, true);
+    get Hostname(): string {
+        return process.env.DB_HOST_NAME;
     }    
-    getUsername(): Promise<string> {
-        return this.paramStore.getValue(`db-username`, true);
+    get Username(): string {
+        return process.env.DB_USERNAME;
     }
-    getPassword(): Promise<string> {
-        return this.paramStore.getValue(`db-pwd`, true);
+    get Password(): string {
+        return process.env.DB_PASSWORD;
     }
-    getDbName(): Promise<string> {
-        return this.paramStore.getValue(`db-name`, true);
+    get DbName(): string {
+        return process.env.DB_DATABASE_NAME;
     }
 
-    get EnableCors() : boolean { return false; }
+    get EnableCors() : boolean { return process.env.ENABLE_CORS ? process.env.ENABLE_CORS.toLowerCase() == 'true' : false; }
     get Port(): number { return process.env.PORT ? +process.env.PORT : 3000; };
     
     getPersistenceFactory() : IPersistenceFactory {
+        if (process.env.MODE == 'LOCAL')
+            return new InMemoryPersistenceFactory();
+
         return new AwsPersistenceFactory(this.logFactory, this);
     }
 
-    private readonly paramStore = new AwsParameterStoreConfig();
-
     public constructor(private logFactory : LogFactory) {
-    }
-}
-
-export class LocalConfigProvider implements IAppConfig {
-    async getCookieDomain(): Promise<string> {
-        return process.env.COOKIE_DOMAIN;
-    }
-    async getJwtSecret(): Promise<string> {
-        return process.env.JWT_SECRET;
-    }
-    
-    async getGoogleClientSecret(): Promise<string> {
-        return process.env.GOOGLE_AUTH_CLIENT_SECRET;
-    }
-
-    async getGoogleClientId(): Promise<string> {
-        return process.env.GOOGLE_AUTH_CLIENT_ID;
-    }
-    
-    async getGoogleApiKey(): Promise<string> {
-        return process.env.GOOGLE_API_KEY;
-    }
-    get EnableCors() : boolean { return process.env.ENABLE_CORS && process.env.ENABLE_CORS.toLocaleLowerCase() == 'true'; }
-    get Port(): number { return +process.env.PORT; };
-    
-    getPersistenceFactory() : IPersistenceFactory {
-        return new InMemoryPersistenceFactory();
-    }
-    
-    constructor() {
-        dotenv.config();
     }
 }

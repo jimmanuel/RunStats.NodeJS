@@ -7,9 +7,9 @@ export class MySqlRepoBase {
     public static async init(mySqlConfig: IRdsConfig) : Promise<void> {
         this.pool = await mysql.createPool(
             {
-                password: await mySqlConfig.getPassword(),
-                user: await mySqlConfig.getUsername(),
-                host: await mySqlConfig.getHostname(),
+                password: mySqlConfig.Password,
+                user: mySqlConfig.Username,
+                host: mySqlConfig.Hostname,
                 connectionLimit: 50,
                 
             });

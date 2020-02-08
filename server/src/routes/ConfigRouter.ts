@@ -12,8 +12,8 @@ export class ConfigRouter extends BaseRouter implements IConfigRouter {
         try {
             res.json(
                 {
-                    googleApiKey: await this.appConfig.getGoogleApiKey(),
-                    googleClientId: await this.appConfig.getGoogleClientId()
+                    googleApiKey: this.appConfig.GoogleApiKey,
+                    googleClientId: this.appConfig.GoogleClientId
                 }).end();
         } 
         catch (error) {

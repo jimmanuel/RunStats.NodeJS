@@ -1,6 +1,6 @@
 export interface IRdsConfig {
-    getHostname() : Promise<string>;
-    getUsername() : Promise<string>;
-    getPassword() : Promise<string>;
-    getDbName() : Promise<string>;
+    Hostname : string;
+    Username : string;
+    Password : string;
+    DbName : string;
 }

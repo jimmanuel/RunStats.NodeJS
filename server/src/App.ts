@@ -2,32 +2,49 @@ import * as express from 'express'
 import { ActivityRouter, IActivityRouter } from './routes/ActivityRouter';
 import { Logger, ILog } from './domain/Logger';
 import { GpxParser } from './domain/GpxParser';
-import { IAppConfig, LocalConfigProvider, AwsConfigProvider } from './config/AppConfig';
+import { IAppConfig, AppConfigImpl as AppConfig } from './config/AppConfig';
 import { IConfigRouter, ConfigRouter } from './routes/ConfigRouter';
 import { IAuthRouter, AuthRouter } from './routes/AuthRouter';
-import { IJwtService, JwtService } from './services/JwtService';
+import { JwtService } from './services/JwtService';
 import { AuthService, IAuthService } from './services/AuthService';
+import { IAppConfigLoader, AwsConfigLoader, LocalAppConfigLoader } from './config/AppConfigLoader';
+import { isNullOrUndefined } from 'util';
 var cookieParser = require('cookie-parser');
-
-let appConfig: IAppConfig = process.env.MODE == 'LOCAL' ? new LocalConfigProvider() : new AwsConfigProvider(Logger.create);
-let persistenceFactory = appConfig.getPersistenceFactory();
 
 class App {  
     public express;
-    private readonly activityRouter : IActivityRouter;
-    private readonly configRouter : IConfigRouter;
-    private readonly authRouter : IAuthRouter;
-    private readonly authService : IAuthService;
-    private readonly logger : ILog = Logger.create('App');
+    private appConfig : IAppConfig;
+    private activityRouter : IActivityRouter;
+    private configRouter : IConfigRouter;
+    private authRouter : IAuthRouter;
+    private authService : IAuthService;
+    private logger : ILog = Logger.create('App');
 
     constructor () {
+    }
 
-        const jwtService = new JwtService(Logger.create, appConfig);
-        this.authService = new AuthService(Logger.create, appConfig, jwtService);
+    public async init() : Promise<void> {
 
-        this.configRouter = new ConfigRouter(Logger.create, appConfig);
+        let configLoader : IAppConfigLoader = null;
+        if (process.env.AWS_ENV) {
+            configLoader = new AwsConfigLoader();
+            this.logger.info(`Loading config using AWS`);
+        } else {
+            configLoader = new LocalAppConfigLoader();
+            this.logger.info(`Loading config using config file`);
+        }
+
+        await configLoader.load();
+
+        this.appConfig = new AppConfig(Logger.create);
+        let persistenceFactory = this.appConfig.getPersistenceFactory();
+        
+        const jwtService = new JwtService(Logger.create, this.appConfig);
+        this.authService = new AuthService(Logger.create, this.appConfig, jwtService);
+
+        this.configRouter = new ConfigRouter(Logger.create, this.appConfig);
         this.activityRouter = new ActivityRouter(Logger.create, persistenceFactory.getActivityRepo(), new GpxParser(), persistenceFactory.getDataPointRepo());
-        this.authRouter = new AuthRouter(Logger.create, appConfig, jwtService, this.authService);
+        this.authRouter = new AuthRouter(Logger.create, this.appConfig, jwtService, this.authService);
 
         this.logger.info('All Routers and necessary dependencies have been instantiated')
 
@@ -37,7 +54,7 @@ class App {
     private async mountRoutes (): Promise<void> {
         const router = express.Router();
 
-        if (appConfig.EnableCors) {
+        if (this.appConfig.EnableCors) {
             this.logger.info('enabling CORS')
             router.use(function(req, res, next) {
                 res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
@@ -71,21 +88,18 @@ class App {
     }
 
     public async start() : Promise<void> {
-        
+        await this.init();
+
         await this.mountRoutes();
 
-        await persistenceFactory.init();
-        this.express.listen(appConfig.Port, (err) => {  
+        this.express.listen(this.appConfig.Port, (err) => {  
             if (err) {
             return this.logger.error(err)
             }
 
-            return this.logger.info(`server is listening on ${appConfig.Port}`)
+            return this.logger.info(`server is listening on ${this.appConfig.Port}`)
         })
     }
 }
-
-
-
 
 export default new App();  

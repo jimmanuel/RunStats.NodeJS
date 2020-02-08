@@ -3,7 +3,7 @@ import { IJwtConfig } from '../../src/config/AppConfig';
 import { ConsoleLogger } from '../ConsoleLogger';
 
 class FakeConfig implements IJwtConfig {
-    async getJwtSecret(): Promise<string> {
+    get JwtSecret(): string {
         return 'this-is-a-secret';
     }
 }

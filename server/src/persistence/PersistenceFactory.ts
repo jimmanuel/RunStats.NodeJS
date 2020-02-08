@@ -39,7 +39,7 @@ export class AwsPersistenceFactory implements IPersistenceFactory {
     public constructor(logFactory: LogFactory, private appConfig : IAwsConfig) {
         //MySqlRepoBase.init(appConfig);
         this.logger = logFactory('AWS Persistence Factory');
-        const s3Factory = async () => new S3Bucket(await appConfig.getBucketName());
+        const s3Factory = async () => new S3Bucket(appConfig.BucketName);
         this.actMetaRepo = new ActivityMetadataRepository(Logger.create);
         this.dataPointRepo = new DataPointRepository(Logger.create, s3Factory);
     }
