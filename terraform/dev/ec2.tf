@@ -17,7 +17,7 @@ resource "aws_instance" "i-rswebapp" {
     }
 }
 
-resource "aws_lb_target_group_attachment" "att-rsweb" {
-    target_group_arn = aws_lb_target_group.tg-rswebapp.arn
-    target_id = aws_instance.i-rswebapp.id
-}
+# resource "aws_lb_target_group_attachment" "att-rsweb" {
+#     target_group_arn = aws_lb_target_group.tg-rswebapp.arn
+#     target_id = aws_instance.i-rswebapp.id
+# }

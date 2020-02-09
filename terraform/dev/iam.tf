@@ -8,7 +8,10 @@ resource "aws_iam_role" "rs-iamrole-webapp" {
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": "ec2.amazonaws.com"
+        "Service": [ 
+            "ec2.amazonaws.com",
+            "ecs-tasks.amazonaws.com" 
+            ]
       },
       "Effect": "Allow",
       "Sid": ""
@@ -77,6 +80,17 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-builddropaccess" {
                 "s3:List*"
             ],
             "Resource": "arn:aws:s3:::labar.jimbo.code/scripts/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
+            ],
+            "Resource": "*"
         }
     ]
 }
