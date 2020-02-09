@@ -4,6 +4,7 @@ resource "aws_lb_target_group" "tg-rswebapp" {
     protocol = "HTTP"
     vpc_id = aws_vpc.runstatsjs.id
     deregistration_delay = 15
+    target_type = "ip"
 
     health_check {
         enabled = true

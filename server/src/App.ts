@@ -8,7 +8,6 @@ import { IAuthRouter, AuthRouter } from './routes/AuthRouter';
 import { JwtService } from './services/JwtService';
 import { AuthService, IAuthService } from './services/AuthService';
 import { IAppConfigLoader, AwsConfigLoader, LocalAppConfigLoader } from './config/AppConfigLoader';
-import { isNullOrUndefined } from 'util';
 var cookieParser = require('cookie-parser');
 
 class App {  
@@ -38,6 +37,7 @@ class App {
 
         this.appConfig = new AppConfig(Logger.create);
         let persistenceFactory = this.appConfig.getPersistenceFactory();
+        await persistenceFactory.init();
         
         const jwtService = new JwtService(Logger.create, this.appConfig);
         this.authService = new AuthService(Logger.create, this.appConfig, jwtService);

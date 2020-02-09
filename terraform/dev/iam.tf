@@ -8,7 +8,10 @@ resource "aws_iam_role" "rs-iamrole-webapp" {
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": "ec2.amazonaws.com"
+        "Service": [ 
+            "ec2.amazonaws.com",
+            "ecs-tasks.amazonaws.com" 
+            ]
       },
       "Effect": "Allow",
       "Sid": ""
@@ -77,6 +80,17 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-builddropaccess" {
                 "s3:List*"
             ],
             "Resource": "arn:aws:s3:::labar.jimbo.code/scripts/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
+            ],
+            "Resource": "*"
         }
     ]
 }
@@ -97,6 +111,30 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-ssmaccess" {
             "Effect": "Allow",
             "Action": [ "ssm:*" ],
             "Resource": "arn:aws:ssm:*:*:parameter/${var.env_prefix}/*"
+        }
+    ]
+}
+    EOF
+}
+
+resource "aws_iam_role_policy" "rs-policy-rsweb-logsaccess" {
+    name = "${var.env_prefix}-policy-rsweb-logsaccess"
+    role = aws_iam_role.rs-iamrole-webapp.id
+
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
         }
     ]
 }
