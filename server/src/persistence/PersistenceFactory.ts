@@ -19,8 +19,8 @@ export class AwsPersistenceFactory implements IPersistenceFactory {
             await PostgresSqlRepoBase.init(this.appConfig);
             await this.actMetaRepo.ping();
         } catch (error) {
-            // we expect this to fail
-            this.logger.debug(JSON.stringify(error))
+            // we no longer expect this to fail
+            this.logger.error(JSON.stringify(error))
         }
     }
 

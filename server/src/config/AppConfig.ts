@@ -59,10 +59,10 @@ export class AppConfigImpl implements IAppConfig, IAwsConfig {
     get Port(): number { return process.env.PORT ? +process.env.PORT : 3000; };
     
     getPersistenceFactory() : IPersistenceFactory {
-        if (process.env.MODE == 'LOCAL')
-            return new InMemoryPersistenceFactory();
+        if (process.env.AWS_ENV)
+            return new AwsPersistenceFactory(this.logFactory, this);
+        return new InMemoryPersistenceFactory();
 
-        return new AwsPersistenceFactory(this.logFactory, this);
     }
 
     public constructor(private logFactory : LogFactory) {

@@ -7,17 +7,7 @@ resource "aws_instance" "i-rswebapp" {
     key_name = "${var.env_prefix}-webapp"
     associate_public_ip_address = true
 
-#    user_data = <<EOF
-#sudo bash
-#echo "AWS_ENV=${var.env_prefix}" >> /etc/environment
-#EOF
-
     tags = {
         AppName = var.env_prefix
     }
 }
-
-# resource "aws_lb_target_group_attachment" "att-rsweb" {
-#     target_group_arn = aws_lb_target_group.tg-rswebapp.arn
-#     target_id = aws_instance.i-rswebapp.id
-# }

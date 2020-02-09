@@ -117,6 +117,30 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-ssmaccess" {
     EOF
 }
 
+resource "aws_iam_role_policy" "rs-policy-rsweb-logsaccess" {
+    name = "${var.env_prefix}-policy-rsweb-logsaccess"
+    role = aws_iam_role.rs-iamrole-webapp.id
+
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        }
+    ]
+}
+    EOF
+}
+
 
 resource "aws_iam_instance_profile" "rs-rswebapp-instance-profile" {
     name = "${var.env_prefix}-rswebapp-instance-profile"
