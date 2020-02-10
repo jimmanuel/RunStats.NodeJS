@@ -7,13 +7,14 @@ export interface IEnvironmentLoader {
 
 export class LocalEnvLoader implements IEnvironmentLoader {
     async load(): Promise<void> {
+        console.log('loading with dotenv')
         dotenv.config();
     }
 }
 
 export class AwsEnvLoader implements IEnvironmentLoader {
     async load(): Promise<void> {
-        
+        console.log('loading from SSM')
         const ssm = new AwsParameterStoreConfig();
         process.env.DB_HOST = await ssm.getValue('db-server', true);
         process.env.DB_USERNAME = await ssm.getValue('db-username', true);

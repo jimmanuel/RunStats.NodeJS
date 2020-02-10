@@ -7,10 +7,13 @@ const fs = require('fs')
 
 const func = async () => {
 
-    const loader : IEnvironmentLoader = process.env.PLATFORM == 'AWS' ? new AwsEnvLoader() : new LocalEnvLoader()
+    const loader : IEnvironmentLoader = process.env.AWS_ENV ? new AwsEnvLoader() : new LocalEnvLoader()
     await loader.load();
 
     const appConfig = new EnvironmentVarConfig();
+
+    console.log(`connecting to ${appConfig.dbHost}:${appConfig.dbName}`)
+    console.log(`connecting as ${appConfig.dbUsername}`)
 
     const pool = new Pool({ 
         password: appConfig.dbPassword,
@@ -25,22 +28,28 @@ const func = async () => {
     console.log(`SqlPath is ${sqlPath}`);
     let files = fs.readdirSync(sqlPath);
     files = _.sortBy(files);
-    for(const file of files) {
+    
+    const client = await pool.connect();
+    try {
+        for(const file of files) {
 
-        console.log(`Running script ${JSON.stringify(file)}`);
-        const fileBuffer = fs.readFileSync(path.join(sqlPath, file))
-        const client = await pool.connect();
-        try {
+            console.log(`Running script ${JSON.stringify(file)}`);
+            const fileBuffer = fs.readFileSync(path.join(sqlPath, file))
             await client.query(fileBuffer.toString());
             console.log(`Successfully Completed script ${JSON.stringify(file)}`);
-        } finally {
-            client.release();
+
+
         }
-
-
+    } finally {
+        client.release();
     }
 
     await pool.end();
 };
+
+export const handler = async (event: any = {}): Promise<any> => {
+    await func();
+    return true;
+}
 
 func().then(() => console.log("complete"));

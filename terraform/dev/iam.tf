@@ -10,7 +10,8 @@ resource "aws_iam_role" "rs-iamrole-webapp" {
       "Principal": {
         "Service": [ 
             "ec2.amazonaws.com",
-            "ecs-tasks.amazonaws.com" 
+            "ecs-tasks.amazonaws.com",
+            "lambda.amazonaws.com"
             ]
       },
       "Effect": "Allow",
