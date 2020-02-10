@@ -33,10 +33,16 @@ class App {
             this.logger.info(`Loading config using config file`);
         }
 
-        await configLoader.load();
+        try {
+            await configLoader.load();
+            this.logger.debug('config has been loaded');
+        } catch (error) {
+            this.logger.fatal(`failed to load config: ${JSON.stringify(error)}`);
+            throw error;
+        }
 
         this.appConfig = new AppConfig(Logger.create);
-        let persistenceFactory = this.appConfig.getPersistenceFactory();
+        let persistenceFactory = await this.appConfig.getPersistenceFactory();
         await persistenceFactory.init();
         
         const jwtService = new JwtService(Logger.create, this.appConfig);

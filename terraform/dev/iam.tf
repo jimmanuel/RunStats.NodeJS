@@ -109,7 +109,7 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-ssmaccess" {
         {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
-            "Action": [ "ssm:*" ],
+            "Action": [ "ssm:*", "secretsmanager:*" ],
             "Resource": "arn:aws:ssm:*:*:parameter/${var.env_prefix}/*"
         }
     ]

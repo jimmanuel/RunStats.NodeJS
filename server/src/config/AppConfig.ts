@@ -2,6 +2,7 @@ import { IRdsConfig } from './RdsConfig';
 import { IS3Config } from './S3Config';
 import { IPersistenceFactory, AwsPersistenceFactory, InMemoryPersistenceFactory } from "../persistence/PersistenceFactory";
 import { LogFactory } from "../domain/Logger";
+import { PostgresSqlRepoBase } from '../persistence/PostgresSqlRepoBase';
 
 export interface IJwtConfig {
     JwtSecret : string;
@@ -17,7 +18,7 @@ export interface IAppConfig extends IJwtConfig, ICookieConfig {
     EnableCors: boolean;
     Port: number;
     GoogleApiKey: string;
-    getPersistenceFactory() : IPersistenceFactory;
+    getPersistenceFactory() : Promise<IPersistenceFactory>;
 }
 
 export interface IAwsConfig extends IRdsConfig, IS3Config {
@@ -58,9 +59,11 @@ export class AppConfigImpl implements IAppConfig, IAwsConfig {
     get EnableCors() : boolean { return process.env.ENABLE_CORS ? process.env.ENABLE_CORS.toLowerCase() == 'true' : false; }
     get Port(): number { return process.env.PORT ? +process.env.PORT : 3000; };
     
-    getPersistenceFactory() : IPersistenceFactory {
-        if (process.env.AWS_ENV)
+    async getPersistenceFactory() : Promise<IPersistenceFactory> {
+        if (process.env.AWS_ENV) {
+            await PostgresSqlRepoBase.init(this);
             return new AwsPersistenceFactory(this.logFactory, this);
+        }
         return new InMemoryPersistenceFactory();
 
     }

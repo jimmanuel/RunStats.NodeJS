@@ -5,6 +5,7 @@ resource "aws_ecs_cluster" "ecs-cluster-rs" {
 resource "aws_ecs_task_definition" "ecs-taskdef-rs" {
   family                = "runstatsjs-webapp"
   execution_role_arn = aws_iam_role.rs-iamrole-webapp.arn
+  task_role_arn = aws_iam_role.rs-iamrole-webapp.arn
   requires_compatibilities = ["FARGATE"]
   network_mode = "awsvpc"
   cpu = 256
