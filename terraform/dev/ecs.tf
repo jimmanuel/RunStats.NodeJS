@@ -51,7 +51,7 @@ resource "aws_ecs_service" "ecs-rs" {
   cluster         = aws_ecs_cluster.ecs-cluster-rs.id
   task_definition = aws_ecs_task_definition.ecs-taskdef-rs.arn
   desired_count   = 1
-  depends_on      = [ aws_iam_role.rs-iamrole-webapp ]
+  depends_on      = [ aws_iam_role.rs-iamrole-webapp, aws_lb_listener_rule.albl-webtier-rule ]
   launch_type     = "FARGATE"
 
   load_balancer {

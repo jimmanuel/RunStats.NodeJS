@@ -10,8 +10,7 @@ resource "aws_iam_role" "rs-iamrole-webapp" {
       "Principal": {
         "Service": [ 
             "ec2.amazonaws.com",
-            "ecs-tasks.amazonaws.com",
-            "lambda.amazonaws.com"
+            "ecs-tasks.amazonaws.com"
             ]
       },
       "Effect": "Allow",
@@ -146,4 +145,74 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-logsaccess" {
 resource "aws_iam_instance_profile" "rs-rswebapp-instance-profile" {
     name = "${var.env_prefix}-rswebapp-instance-profile"
     role = aws_iam_role.rs-iamrole-webapp.name
+}
+
+resource "aws_iam_role" "rs-iamrole-dbdeployer" {
+    name = "${var.env_prefix}-iamrole-dbdeployer"
+    path = "/"
+    assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": [ 
+            "lambda.amazonaws.com"
+            ]
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+    EOF
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}
+
+resource "aws_iam_role_policy" "rs-policy-rsdb-ssmaccess" {
+    name = "${var.env_prefix}-policy-rsdb-ssmaccess"
+    role = aws_iam_role.rs-iamrole-dbdeployer.id
+
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [ "ssm:*", "secretsmanager:*" ],
+            "Resource": "arn:aws:ssm:*:*:parameter/${var.env_prefix}/*"
+        }
+    ]
+}
+    EOF
+}
+
+resource "aws_iam_role_policy" "rs-policy-rsdb-lambdavpc" {
+    name = "${var.env_prefix}-policy-rsdb-lambdavpc"
+    role = aws_iam_role.rs-iamrole-dbdeployer.id
+
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "ec2:CreateNetworkInterface",
+                "ec2:DescribeNetworkInterfaces",
+                "ec2:DeleteNetworkInterface"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+    EOF
 }
