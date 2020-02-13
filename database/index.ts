@@ -5,14 +5,15 @@ import * as _ from 'lodash'
 const path = require('path')
 const fs = require('fs')
 
-const func = async () => {
+const func = async (scriptFolder: string) => {
 
     const loader : IEnvironmentLoader = process.env.AWS_ENV ? new AwsEnvLoader() : new LocalEnvLoader()
     await loader.load();
 
     const appConfig = new EnvironmentVarConfig();
 
-    console.log(`connecting to ${appConfig.dbHost}:${appConfig.dbName}`)
+    console.log(`connecting host ${appConfig.dbHost}:${appConfig.dbHost}`)
+    console.log(`connecting database ${appConfig.dbName}`)
     console.log(`connecting as ${appConfig.dbUsername}`)
 
     const pool = new Pool({ 
@@ -24,32 +25,35 @@ const func = async () => {
         query_timeout: 15 * 1000                
     });
     
-    const sqlPath = path.join(__dirname, 'schema');
+    const sqlPath = path.join(__dirname, scriptFolder);
     console.log(`SqlPath is ${sqlPath}`);
     let files = fs.readdirSync(sqlPath);
-    files = _.sortBy(files);
+    files = _.sortedUniq(files);
     
-    const client = await pool.connect();
-    try {
         for(const file of files) {
+            const client = await pool.connect();
+            try {
+                console.log(`Running script ${JSON.stringify(file)}`);
+                const fileBuffer = fs.readFileSync(path.join(sqlPath, file))
+                await client.query(fileBuffer.toString());
+                console.log(`Successfully Completed script ${JSON.stringify(file)}`);
 
-            console.log(`Running script ${JSON.stringify(file)}`);
-            const fileBuffer = fs.readFileSync(path.join(sqlPath, file))
-            await client.query(fileBuffer.toString());
-            console.log(`Successfully Completed script ${JSON.stringify(file)}`);
-
-
+            } finally {
+                client.release();
+            }
         }
-    } finally {
-        client.release();
-    }
 
     await pool.end();
 };
 
 export const handler = async (event: any = {}): Promise<any> => {
-    await func();
+    await func('schema');
     return true;
 }
 
-func().then(() => console.log("complete"));
+export const deletehandler = async (event: any = {}): Promise<any> => {
+    await func('schemadestroy');
+    return true;
+}
+
+//func().then(() => console.log("complete"));

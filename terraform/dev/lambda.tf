@@ -5,12 +5,17 @@ resource "aws_lambda_function" "lam-rs-dbdeployer" {
   role          = aws_iam_role.rs-iamrole-dbdeployer.arn
   handler       = "app/index.handler"
   memory_size = 128
-  timeout = 30
+  timeout = 15
   publish = "true"
+  
 
   environment {
+
       variables = {
-          AWS_ENV = var.env_prefix
+          DB_NAME: aws_db_instance.rs-mysql.name
+          DB_HOST: aws_db_instance.rs-mysql.address
+          DB_USERNAME: var.db_username
+          DB_PASSWORD: var.db_password
       }
   }
 
@@ -23,6 +28,6 @@ resource "aws_lambda_function" "lam-rs-dbdeployer" {
 
   vpc_config {
       subnet_ids = [ aws_subnet.rs-subnet.id, aws_subnet.rs-subnet-alt.id ]
-      security_group_ids = [ aws_security_group.sg-rs-webapp.id ]
+      security_group_ids = [ aws_security_group.sg-rs-dbdeployer.id ]
   }
 }

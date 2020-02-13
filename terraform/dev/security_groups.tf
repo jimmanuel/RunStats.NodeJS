@@ -54,6 +54,23 @@ resource "aws_security_group" "sg-rs-webapp" {
     }
 }
 
+resource "aws_security_group" "sg-rs-dbdeployer" {
+    name        = "${var.env_prefix}-sg-rs-dbdeployer"
+    description = "security group for the Run Stats database deployer"
+    vpc_id      = aws_vpc.runstatsjs.id
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = [ "0.0.0.0/0" ]
+    }
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}
+
 
 resource "aws_security_group" "sg-rs-rds" {
     name        = "${var.env_prefix}-sg-rs-rds"
@@ -64,7 +81,7 @@ resource "aws_security_group" "sg-rs-rds" {
         from_port   = 5432
         to_port     = 5432
         protocol    = "tcp"
-        security_groups = [ aws_security_group.sg-rs-webapp.id ]
+        security_groups = [ aws_security_group.sg-rs-webapp.id, aws_security_group.sg-rs-dbdeployer.id ]
     }
 
     tags = {

@@ -184,7 +184,7 @@ resource "aws_iam_role_policy" "rs-policy-rsdb-ssmaccess" {
         {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
-            "Action": [ "ssm:*", "secretsmanager:*" ],
+            "Action": [ "ssm:*", "secretsmanager:*", "kms:*" ],
             "Resource": "arn:aws:ssm:*:*:parameter/${var.env_prefix}/*"
         }
     ]
