@@ -6,13 +6,14 @@ import * as uuid from 'uuid';
 import { ActivityExistsError } from "../domain/ActivityExistsError";
 import { ActivityNotFoundException } from "../domain/ActivityNotFoundException";
 import { QueryResult } from "pg";
+import { PermissionDeniedException } from "../domain/PermissionDeniedException";
 
 export interface IActivityMetadataRepository {
     ping() : Promise<void>;
-    deleteActivity(id: number) : Promise<void>;
-    getActivityUUID(id: number) : Promise<string>;
-    saveMetadata(activity: RunActivity): Promise<ActivityToken>;
-    getAllMetadata() : Promise<IActivityMetadata[]>;
+    deleteActivity(userId: string, id: number) : Promise<void>;
+    getActivityUUID(userId: string, id: number) : Promise<string>;
+    saveMetadata(userId: string, activity: RunActivity): Promise<ActivityToken>;
+    getAllMetadata(userId: string) : Promise<IActivityMetadata[]>;
 }
 
 export class ActivityMetadataRepository extends PostgresSqlRepoBase implements IActivityMetadataRepository {
@@ -24,15 +25,30 @@ export class ActivityMetadataRepository extends PostgresSqlRepoBase implements I
         });
     }
     
-    async deleteActivity(id: number): Promise<void> {
+    async ownsActivity(userId: string, activityId: number) : Promise<boolean> {
         return this.query(async conn => {
+            const result : QueryResult<any> = await conn.query('select uuid from RunStats.ActivityMetadata where id = $1 and userid = $2', [activityId, userId]);
+            return result.rowCount > 0;
+        });
+    }
+
+    async deleteActivity(userId: string, id: number): Promise<void> {
+        return this.query(async conn => {
+            if (!this.ownsActivity(userId, id)){
+                throw new PermissionDeniedException();
+            }
+
             await conn.query('delete from RunStats.ActivityMetadata where id = $1', [id]);
             return;
         });
     }
     
-    public async getActivityUUID(id: number) : Promise<string> {
+    public async getActivityUUID(userId: string, id: number) : Promise<string> {
         return this.query(async conn => {
+            if (!this.ownsActivity(userId, id)){
+                throw new PermissionDeniedException();
+            }
+
             const result : QueryResult<any> = await conn.query('select uuid from RunStats.ActivityMetadata where id = $1', [id]);
             //result.rows.map(x => this.logger.debug(JSON.stringify(x)));     
             if (result.rowCount == 0) {
@@ -47,9 +63,9 @@ export class ActivityMetadataRepository extends PostgresSqlRepoBase implements I
         });
     }
     
-    public async getAllMetadata(): Promise<IActivityMetadata[]> {
+    public async getAllMetadata(userId: string): Promise<IActivityMetadata[]> {
         return this.query(async conn => {
-            const result : QueryResult<any> = await conn.query('select id, distancemeters, durationseconds, starttime from RunStats.ActivityMetadata');
+            const result : QueryResult<any> = await conn.query('select id, distancemeters, durationseconds, starttime from RunStats.ActivityMetadata where userid = $1', [ userId ]);
             //result.rows.map(x => this.logger.debug(JSON.stringify(x)));
             return result.rows.map(x => { return { 
                 id: +x.id, 
@@ -60,16 +76,16 @@ export class ActivityMetadataRepository extends PostgresSqlRepoBase implements I
         });
     }
     
-    private async activityExists(startTime: number) : Promise<boolean> {
+    private async activityExists(userId: string, startTime: number) : Promise<boolean> {
         return this.query(async conn => {
-            const result = await conn.query('select starttime from RunStats.ActivityMetadata where starttime = $1', [startTime]);
+            const result = await conn.query('select starttime from RunStats.ActivityMetadata where starttime = $1 and userid = $2', [startTime, userId]);
             return result.rowCount > 0;
         });
     }
 
-    public async saveMetadata(activity: RunActivity): Promise<ActivityToken> {
+    public async saveMetadata(userId: string, activity: RunActivity): Promise<ActivityToken> {
 
-        if (await this.activityExists(activity.epochStartTime)) {
+        if (await this.activityExists(userId, activity.epochStartTime)) {
             throw new ActivityExistsError();
         }
 
@@ -77,12 +93,13 @@ export class ActivityMetadataRepository extends PostgresSqlRepoBase implements I
 
             const key = uuid.v4();
 
-            const result = await conn.query('insert into RunStats.ActivityMetadata (distancemeters, durationseconds, starttime, uuid) values ($1, $2, $3, $4)', 
+            const result = await conn.query('insert into RunStats.ActivityMetadata (distancemeters, durationseconds, starttime, uuid, userid) values ($1, $2, $3, $4, $5)', 
             [
                 activity.distanceMeters,
                 activity.duration,
                 activity.epochStartTime,
-                key
+                key,
+                userId
             ]);
             
             return new ActivityToken(result.oid, key);
@@ -108,11 +125,11 @@ export class InMemoryActivityMetadataRepo implements IActivityMetadataRepository
     async ping(): Promise<void> {
         return; // nothing to do
     }
-    async deleteActivity(id: number) : Promise<void> {
+    async deleteActivity(userId: string, id: number) : Promise<void> {
         this.cache = this.cache.filter(x => x.Id != id);
     }
 
-    public async getActivityUUID(id: number): Promise<string> {
+    public async getActivityUUID(userId: string, id: number): Promise<string> {
         const item = this.cache.find(x => x.Id == id);
         if (!item) {
             throw new ActivityNotFoundException();
@@ -120,7 +137,7 @@ export class InMemoryActivityMetadataRepo implements IActivityMetadataRepository
         return item.UUID;
     }    
     
-    public async saveMetadata(activity: RunActivity): Promise<ActivityToken> {
+    public async saveMetadata(userId: string, activity: RunActivity): Promise<ActivityToken> {
         const item = this.cache.find(x => x.StartTimeEpoch == activity.epochStartTime);
         if (item) {
             throw new ActivityExistsError();
@@ -150,7 +167,7 @@ export class InMemoryActivityMetadataRepo implements IActivityMetadataRepository
         return id;
     }
 
-    public async getAllMetadata(): Promise<IActivityMetadata[]> {
+    public async getAllMetadata(userId: string): Promise<IActivityMetadata[]> {
         return this.cache.map(x => { return { 
             id: x.Id, 
             distanceMeters: x.Distance,

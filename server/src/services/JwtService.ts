@@ -3,7 +3,7 @@ import { LogFactory, ILog } from '../domain/Logger';
 var njwt = require('njwt');
 
 export interface IUserToken {
-    id: number;
+    id: string;
     email: string;
 }
 
