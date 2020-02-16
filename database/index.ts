@@ -46,13 +46,19 @@ const func = async (scriptFolder: string) => {
     await pool.end();
 };
 
-export const handler = async (event: any = {}): Promise<any> => {
+export const createHandler = async (event: any = {}): Promise<any> => {
     await func('schema');
     return true;
 }
 
 export const deletehandler = async (event: any = {}): Promise<any> => {
     await func('schemadestroy');
+    return true;
+}
+
+export const resethandler = async (event: any = {}): Promise<any> => {
+    await deletehandler();
+    await createHandler();
     return true;
 }
 
