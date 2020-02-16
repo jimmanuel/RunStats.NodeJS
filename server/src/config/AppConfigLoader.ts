@@ -24,7 +24,6 @@ export class AwsConfigLoader implements IAppConfigLoader {
         process.env.DB_USERNAME = await this.paramStore.getValue(`db-username`, false);
         process.env.DB_PASSWORD = await this.paramStore.getValue(`db-pwd`, true);
         process.env.DB_DATABASE_NAME = await this.paramStore.getValue(`db-name`, false);
-        
     }
 
     private readonly paramStore = new AwsParameterStoreConfig();

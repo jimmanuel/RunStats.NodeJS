@@ -7,7 +7,7 @@
     "compile": "rm -rf ./app/*; node_modules/typescript/bin/tsc; mkdir ./app/schema; cp ./schema/* ./app/schema/; mkdir ./app/schemadestroy; cp ./schemadestroy/* ./app/schemadestroy/",
     "debug": "node ./app/index.js",
     "start-aws": "PLATFORM=AWS node ./app/index.js",
-    "package": "npm run prune-prod; zip -r rs.db.zip package*.json ./app/* ./node_modules/*"
+    "package": "zip -r rs.db.zip package*.json ./app/* ./node_modules/*"
   },
   "author": "James LaBar",
   "license": "ISC",

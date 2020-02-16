@@ -51,13 +51,13 @@ export const createHandler = async (event: any = {}): Promise<any> => {
     return true;
 }
 
-export const deletehandler = async (event: any = {}): Promise<any> => {
+export const deleteHandler = async (event: any = {}): Promise<any> => {
     await func('schemadestroy');
     return true;
 }
 
-export const resethandler = async (event: any = {}): Promise<any> => {
-    await deletehandler();
+export const resetHandler = async (event: any = {}): Promise<any> => {
+    await deleteHandler();
     await createHandler();
     return true;
 }
