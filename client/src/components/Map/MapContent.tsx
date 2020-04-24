@@ -107,13 +107,13 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
   <Marker /> */}
 
  <Marker
-    name={'Begin'} 
+    label={'Begin'} 
     title={'Begin'}
     position={{lat: act.theStart.latitude, lng: act.theStart.latitude}} />
   <Marker />
 
   <Marker
-    name={'End'}
+    label={'End'}
     title={'End'}
     position={{lat: act.theEnd.latitude, lng: act.theEnd.longitude}} />
   <Marker /> 
