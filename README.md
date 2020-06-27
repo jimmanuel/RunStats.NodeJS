@@ -28,3 +28,33 @@ A few more things of note:
 ### Runtime Configuration
 - When running the application locally, configuration is stored in a .env file
 - When running in AWS, configuration is stored in the Parameter Store
+
+# AWS Deploy Steps
+
+### Prereqs
+1. An ECR repo for docker images
+1. Google OAuth IdP info
+1. Google Maps client info
+1. An ACM Cert
+1. A Route53 Hosted Zone 
+1. An S3 bucket for lambda build output
+
+### Initial Deployment
+1. Compile the app and deploy the artifacts to ECR and the S3 drop folder.
+1. Run the terraform scripts; you'll need a few inputs that I'm not going to describe here because I just plain don't feel like it right now
+1. The tf scripts will leave you with a few things
+    1. Route53 routes to
+    1. An ALB with
+    1. A Target Group that points to 
+    1. An ECS Fargate Service with
+    1. A Task Definition that pulls the latest image from the ECR repo
+    1. Also, a few Lambda functions for database setup along with 
+    1. An RDS instance of PostgreSQL to supplement
+    1. An S3 bucket for object storage
+1. To initialize the database, go find the lambda that's named "setup" or "create" or whatever i called it and run it
+1. You're done; you should be able to navigate to the app wit a browser now. 
+
+### Code Updates
+You can update the application layer by making changes, recompiling and then republishing to ECR.  The ECS task is updated with the latest image simply by killing the existing task.  When a new one starts then it'll pull the latest image.
+
+DB Schema updates are made by making changes to the scripts and then re-publishing the Lambda source to S3.  Then you can go to the Lambda console, update the "redeploy" function from the source bucket and then invoke that function.  It will drop and recreate the schema using the latest scripts.  You may also want to delete the files from the S3 bucket that relate to the metadata in RDS.
