@@ -36,7 +36,6 @@ A few more things of note:
 1. Google OAuth IdP info
 1. Google Maps client info
 1. An ACM Cert
-1. A Route53 Hosted Zone 
 1. An S3 bucket for lambda build output
 
 ### Initial Deployment
@@ -52,9 +51,23 @@ A few more things of note:
     1. An RDS instance of PostgreSQL to supplement
     1. An S3 bucket for object storage
 1. To initialize the database, go find the lambda that's named "setup" or "create" or whatever i called it and run it
-1. You're done; you should be able to navigate to the app wit a browser now. 
+1. You're done; you should be able to navigate to the app with a browser now. 
 
 ### Code Updates
 You can update the application layer by making changes, recompiling and then republishing to ECR.  The ECS task is updated with the latest image simply by killing the existing task.  When a new one starts then it'll pull the latest image.
 
 DB Schema updates are made by making changes to the scripts and then re-publishing the Lambda source to S3.  Then you can go to the Lambda console, update the "redeploy" function from the source bucket and then invoke that function.  It will drop and recreate the schema using the latest scripts.  You may also want to delete the files from the S3 bucket that relate to the metadata in RDS.
+
+# TODOs
+### Standard Priority
+- replace the Internet Gateway with a Nat Gateway
+- replace the React frontend with an Angular frontend
+- update DB Lambdas to not have passwords in the env vars
+- sanity check and untangle the configuration
+
+### Gold Plating
+- update TF to support easily multiple environments
+- split the static content from the service layer
+
+### Gold Plated Cadillac
+- support Azure deployments as well as AWS
