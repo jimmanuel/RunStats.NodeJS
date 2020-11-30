@@ -3,7 +3,6 @@ app
 **/.env
 server/rs.app.zip
 database/rs.db.zip
-server/*.sh
 client/build
 publish.sh
 server/coverage/*

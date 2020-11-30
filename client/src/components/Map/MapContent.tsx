@@ -30,7 +30,8 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
   }
 
   render() {
-
+    return <div />;
+/*
     if (!this.state || !this.state.dataPoints) {
 
       return (
@@ -85,27 +86,6 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
           bounds={bounds}
         >
 
-{/* <Marker
-    name={'Top Left'}
-    title={'Top Left'}
-    position={{lat: actBounds.topLeft.latitude, lng: actBounds.topLeft.longitude}} />
-  <Marker />
-<Marker
-    name={'Top Right'}
-    title={'Top Right'}
-    position={{lat: actBounds.topRight.latitude, lng: actBounds.topRight.longitude}} />
-  <Marker />
-<Marker
-    name={'Bottom Left'}
-    title={'Bottom Left'}
-    position={{lat: actBounds.bottomLeft.latitude, lng: actBounds.bottomLeft.longitude}} />
-  <Marker />
-<Marker
-    name={'Bottom Right'}    
-    title={'Bottom Right'}
-    position={{lat: actBounds.bottomRight.latitude, lng: actBounds.bottomRight.longitude}} />
-  <Marker /> */}
-
  <Marker
     label={'Begin'} 
     title={'Begin'}
@@ -128,6 +108,7 @@ class MapContent extends React.Component<MapContentProps, MapContentState> {
           </Map>
       </div>
     </div>)
+    */
   }
 
   private readonly dataPointService : IDataPointService = new DataPointService();

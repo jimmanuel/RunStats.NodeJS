@@ -25,7 +25,7 @@ class App {
     public async init() : Promise<void> {
 
         let configLoader : IAppConfigLoader = null;
-        if (process.env.AWS_ENV) {
+        if (process.env.ENV_PREFIX) {
             configLoader = new AwsConfigLoader();
             this.logger.info(`Loading config using AWS`);
         } else {

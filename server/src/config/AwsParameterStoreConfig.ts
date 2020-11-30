@@ -3,7 +3,7 @@ import * as AWS from 'aws-sdk';
 export class AwsParameterStoreConfig {
     
     get EnvPrefix() : string {
-        return process.env.AWS_ENV ? process.env.AWS_ENV : "ENV_IS_UNSET";
+        return process.env.ENV_PREFIX ? process.env.ENV_PREFIX : "ENV_IS_UNSET";
     }
     
     public async getValue(name:string, withDecryption: boolean) : Promise<string> {

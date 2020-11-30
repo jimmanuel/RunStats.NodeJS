@@ -60,7 +60,7 @@ export class AppConfigImpl implements IAppConfig, IAwsConfig {
     get Port(): number { return process.env.PORT ? +process.env.PORT : 3000; };
     
     async getPersistenceFactory() : Promise<IPersistenceFactory> {
-        if (process.env.AWS_ENV) {
+        if (process.env.ENV_PREFIX) {
             await PostgresSqlRepoBase.init(this);
             return new AwsPersistenceFactory(this.logFactory, this);
         }

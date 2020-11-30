@@ -1,10 +1,7 @@
 import { IDataPointRepository, DataPointRepository, InMemoryDataPointRepo } from "./DataPointRepository";
 import { IActivityMetadataRepository, ActivityMetadataRepository, InMemoryActivityMetadataRepo } from "./ActivityMetadataRepository";
-import { MySqlRepoBase } from "./MySqlRepoBase";
 import { Logger, LogFactory, ILog } from "../domain/Logger";
 import { S3Bucket } from "./S3Bucket";
-import { IAwsConfig, IAppConfig } from "../config/AppConfig";
-import { PostgresSqlRepoBase } from "./PostgresSqlRepoBase";
 import { IS3Config } from "../config/S3Config";
 
 export interface IPersistenceFactory {
