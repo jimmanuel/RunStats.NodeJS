@@ -60,11 +60,14 @@ export class AppConfigImpl implements IAppConfig, IAwsConfig {
     get Port(): number { return process.env.PORT ? +process.env.PORT : 3000; };
     
     async getPersistenceFactory() : Promise<IPersistenceFactory> {
-        if (process.env.ENV_PREFIX) {
-            await PostgresSqlRepoBase.init(this);
-            return new AwsPersistenceFactory(this.logFactory, this);
+        if (process.env.PERSISTENCE && process.env.PERSISTENCE.toLocaleLowerCase() == 'in_memory') {
+
+            this.logFactory('AppConfig').info('Using In Memory Persistence');
+            return new InMemoryPersistenceFactory();
         }
-        return new InMemoryPersistenceFactory();
+
+        await PostgresSqlRepoBase.init(this);
+        return new AwsPersistenceFactory(this.logFactory, this);
 
     }
 
