@@ -21,6 +21,113 @@ data "terraform_remote_state" "rs_base" {
   }
 }
 
+resource "aws_iam_role" "rs-iamrole-webapp" {
+    name = "${var.env_prefix}-iamrole-webapp"
+    path = "/"
+    assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": [ 
+            "ec2.amazonaws.com",
+            "ecs-tasks.amazonaws.com"
+            ]
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+    EOF
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}
+
+resource "aws_iam_role_policy" "rs-policy-rsweb-s3access" {
+    name = "${var.env_prefix}-policy-rsweb-s3access"
+    role = aws_iam_role.rs-iamrole-webapp.id
+
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "s3:Get*",
+                "s3:List*",
+                "s3:Put*",
+                "s3:Delete*"
+            ],
+            "Resource": "arn:aws:s3:::"${var.env_prefix}-runstats-js-*/*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:List*"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        }
+    ]
+}
+    EOF
+}
+
+resource "aws_iam_role_policy" "rs-policy-rsweb-ssmaccess" {
+    name = "${var.env_prefix}-policy-rsweb-ssmaccess"
+    role = aws_iam_role.rs-iamrole-webapp.id
+
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [ "ssm:*", "secretsmanager:*" ],
+            "Resource": "arn:aws:ssm:*:*:parameter/${var.env_prefix}/*"
+        }
+    ]
+}
+    EOF
+}
+
+resource "aws_iam_role_policy" "rs-policy-rsweb-logsaccess" {
+    name = "${var.env_prefix}-policy-rsweb-logsaccess"
+    role = aws_iam_role.rs-iamrole-webapp.id
+
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents",
+                "logs:DescribeLogStreams"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        }
+    ]
+}
+    EOF
+}
+
+
+resource "aws_iam_instance_profile" "rs-rswebapp-instance-profile" {
+    name = "${var.env_prefix}-rswebapp-instance-profile"
+    role = aws_iam_role.rs-iamrole-webapp.name
+}
+
 resource "aws_ecs_task_definition" "ecs-taskdef-rs" {
   family                = "runstatsjs-webapp"
   execution_role_arn = aws_iam_role.rs-iamrole-webapp.arn
@@ -45,8 +152,12 @@ resource "aws_ecs_task_definition" "ecs-taskdef-rs" {
         ],
         "environment": [
             { 
-                "name": "AWS_ENV",
+                "name": "ENV_PREFIX",
                 "value": "${var.env_prefix}" 
+            },
+            {
+                "name": "PERSISTENCE",
+                "value": "IN_MEMORY"
             }
         ]
         ,"logConfiguration": {
@@ -64,8 +175,53 @@ EOF
 
 }
 
+resource "aws_lb_target_group" "tg-rswebapp" {
+    name = "${var.env_prefix}-tg-rswebapp"
+    port = 3000
+    protocol = "HTTP"
+    vpc_id = aws_vpc.runstatsjs.id
+    deregistration_delay = 15
+    target_type = "ip"
+
+    health_check {
+        enabled = true
+        interval = 15
+        path = "/index.html"
+        port = "traffic-port"
+        protocol = "HTTP"
+        healthy_threshold = "2"
+        unhealthy_threshold = "2"
+    }
+
+    tags = {
+        AppName = var.env_prefix
+    }   
+}
+
+resource "aws_ecs_service" "ecs-rs" {
+  name            = "${var.env_prefix}-ecs-service-rs"
+  cluster         = aws_ecs_cluster.ecs-cluster-rs.id
+  task_definition = aws_ecs_task_definition.ecs-taskdef-rs.arn
+  desired_count   = 1
+  depends_on      = [ aws_internet_gateway.igw-rs, aws_iam_role.rs-iamrole-webapp, aws_lb_listener_rule.albl-webtier-rule ]
+  launch_type     = "FARGATE"
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.tg-rswebapp.arn
+    container_name   = "rswebapp"
+    container_port   = 3000
+  }
+
+  network_configuration {
+      subnets = [ aws_subnet.rs-subnet.id, aws_subnet.rs-subnet-alt.id ]
+      security_groups = [ data.terraform_remote_state.rs_base.output.server_sg_id ] 
+      assign_public_ip = false
+  }
+
+}
+
 resource "aws_lb_listener_rule" "albl-webtier-rule" {
-    listener_arn = aws_lb_listener.albl-rswebtier.arn
+    listener_arn = data.terraform_remote_state.rs_base.output.alb_listener_arn
     priority = 99
 
     action {
