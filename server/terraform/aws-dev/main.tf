@@ -179,7 +179,7 @@ resource "aws_lb_target_group" "tg-rswebapp" {
     name = "${var.env_prefix}-tg-rswebapp"
     port = 3000
     protocol = "HTTP"
-    vpc_id = aws_vpc.runstatsjs.id
+    vpc_id = data.terraform_remote_state.rs_base.outputs.id
     deregistration_delay = 15
     target_type = "ip"
 
@@ -200,10 +200,10 @@ resource "aws_lb_target_group" "tg-rswebapp" {
 
 resource "aws_ecs_service" "ecs-rs" {
   name            = "${var.env_prefix}-ecs-service-rs"
-  cluster         = aws_ecs_cluster.ecs-cluster-rs.id
+  cluster         = data.terraform_remote_state.rs_base.outputs.ecs_cluster_id
   task_definition = aws_ecs_task_definition.ecs-taskdef-rs.arn
   desired_count   = 1
-  depends_on      = [ aws_internet_gateway.igw-rs, aws_iam_role.rs-iamrole-webapp, aws_lb_listener_rule.albl-webtier-rule ]
+  depends_on      = [ aws_iam_role.rs-iamrole-webapp, aws_lb_listener_rule.albl-webtier-rule ]
   launch_type     = "FARGATE"
 
   load_balancer {
@@ -213,15 +213,15 @@ resource "aws_ecs_service" "ecs-rs" {
   }
 
   network_configuration {
-      subnets = [ aws_subnet.rs-subnet.id, aws_subnet.rs-subnet-alt.id ]
-      security_groups = [ data.terraform_remote_state.rs_base.output.server_sg_id ] 
+      subnets = data.terraform_remote_state.rs_base.outputs.private_subnet_ids
+      security_groups = [ data.terraform_remote_state.rs_base.outputs.server_sg_id ] 
       assign_public_ip = false
   }
 
 }
 
 resource "aws_lb_listener_rule" "albl-webtier-rule" {
-    listener_arn = data.terraform_remote_state.rs_base.output.alb_listener_arn
+    listener_arn = data.terraform_remote_state.rs_base.outputs.alb_listener_arn
     priority = 99
 
     action {
