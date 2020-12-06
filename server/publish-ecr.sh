@@ -9,8 +9,6 @@ docker build . \
     -t runstats-js \
     -t r747875535466.dkr.ecr.us-east-1.amazonaws.com/runstats-js:$tag \
     -t ru747875535466.dkr.ecr.us-east-1.amazonaws.com/runstats-js:latest
-#docker tag runstats-js:latest 747875535466.dkr.ecr.us-east-1.amazonaws.com/runstats-js:$tag
-#docker tag runstats-js:latest 747875535466.dkr.ecr.us-east-1.amazonaws.com/runstats-js:latest
 
 aws ecr get-login-password \
     --region us-east-1 \
@@ -20,3 +18,5 @@ aws ecr get-login-password \
 docker push 747875535466.dkr.ecr.us-east-1.amazonaws.com/runstats-js:latest
 
 npm ci
+
+aaws ecs update-service --cluster dev-ecs-cluster-rs --service dev-ecs-service-rs --force-new-deployment
