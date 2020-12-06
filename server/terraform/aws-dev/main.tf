@@ -4,10 +4,10 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    region         = "us-east-1"
-    bucket         = "jlabar-runstats-cicd"
-    key            = "tfstate/dev-server.tfstate"
-    encrypt        = true
+    region  = "us-east-1"
+    bucket  = "jlabar-runstats-cicd"
+    key     = "tfstate/dev-server.tfstate"
+    encrypt = true
   }
 }
 
@@ -16,15 +16,15 @@ data "terraform_remote_state" "rs_base" {
   backend = "s3"
   config = {
     key    = "tfstate/dev-base.tfstate"
-    region = "us-gov-west-1"
+    region = "us-east-1"
     bucket = "jlabar-runstats-cicd"
   }
 }
 
 resource "aws_iam_role" "rs-iamrole-webapp" {
-    name = "${var.env_prefix}-iamrole-webapp"
-    path = "/"
-    assume_role_policy = <<EOF
+  name               = "${var.env_prefix}-iamrole-webapp"
+  path               = "/"
+  assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -43,21 +43,21 @@ resource "aws_iam_role" "rs-iamrole-webapp" {
 }
     EOF
 
-    tags = {
-        AppName = var.env_prefix
-    }
+  tags = {
+    AppName = var.env_prefix
+  }
 }
 
 resource "aws_iam_role_policy" "rs-policy-rsweb-s3access" {
-    name = "${var.env_prefix}-policy-rsweb-s3access"
-    role = aws_iam_role.rs-iamrole-webapp.id
+  name = "${var.env_prefix}-policy-rsweb-s3access"
+  role = aws_iam_role.rs-iamrole-webapp.id
 
-    policy = <<EOF
+  policy = <<POLICY
 {
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "VisualEditor0",
+            "Sid": "VisualEditor555",
             "Effect": "Allow",
             "Action": [
                 "s3:Get*",
@@ -65,7 +65,7 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-s3access" {
                 "s3:Put*",
                 "s3:Delete*"
             ],
-            "Resource": "arn:aws:s3:::"${var.env_prefix}-runstats-js-*/*"
+            "Resource": "arn:aws:s3:::${var.env_prefix}-runstats-js-*/*"
         },
         {
             "Effect": "Allow",
@@ -76,14 +76,14 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-s3access" {
         }
     ]
 }
-    EOF
+    POLICY
 }
 
 resource "aws_iam_role_policy" "rs-policy-rsweb-ssmaccess" {
-    name = "${var.env_prefix}-policy-rsweb-ssmaccess"
-    role = aws_iam_role.rs-iamrole-webapp.id
+  name = "${var.env_prefix}-policy-rsweb-ssmaccess"
+  role = aws_iam_role.rs-iamrole-webapp.id
 
-    policy = <<EOF
+  policy = <<EOF
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -99,10 +99,10 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-ssmaccess" {
 }
 
 resource "aws_iam_role_policy" "rs-policy-rsweb-logsaccess" {
-    name = "${var.env_prefix}-policy-rsweb-logsaccess"
-    role = aws_iam_role.rs-iamrole-webapp.id
+  name = "${var.env_prefix}-policy-rsweb-logsaccess"
+  role = aws_iam_role.rs-iamrole-webapp.id
 
-    policy = <<EOF
+  policy = <<EOF
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -123,20 +123,45 @@ resource "aws_iam_role_policy" "rs-policy-rsweb-logsaccess" {
 }
 
 
+resource "aws_iam_role_policy" "rs-policy-rsweb-buildartifactaccess" {
+    name = "${var.env_prefix}-policy-rsweb-builddropaccess"
+    role = aws_iam_role.rs-iamrole-webapp.id
+
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:BatchGetImage",
+                "ecr:GetDownloadUrlForLayer"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+    EOF
+}
+
+
 resource "aws_iam_instance_profile" "rs-rswebapp-instance-profile" {
-    name = "${var.env_prefix}-rswebapp-instance-profile"
-    role = aws_iam_role.rs-iamrole-webapp.name
+  name = "${var.env_prefix}-rswebapp-instance-profile"
+  role = aws_iam_role.rs-iamrole-webapp.name
 }
 
 resource "aws_ecs_task_definition" "ecs-taskdef-rs" {
-  family                = "runstatsjs-webapp"
-  execution_role_arn = aws_iam_role.rs-iamrole-webapp.arn
-  task_role_arn = aws_iam_role.rs-iamrole-webapp.arn
+  family                   = "runstatsjs-webapp"
+  execution_role_arn       = aws_iam_role.rs-iamrole-webapp.arn
+  task_role_arn            = aws_iam_role.rs-iamrole-webapp.arn
   requires_compatibilities = ["FARGATE"]
-  network_mode = "awsvpc"
-  cpu = 256
-  memory = 512
-  container_definitions = <<EOF
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  container_definitions    = <<EOF
 [
     {
         "name": "rswebapp",
@@ -176,26 +201,26 @@ EOF
 }
 
 resource "aws_lb_target_group" "tg-rswebapp" {
-    name = "${var.env_prefix}-tg-rswebapp"
-    port = 3000
-    protocol = "HTTP"
-    vpc_id = data.terraform_remote_state.rs_base.outputs.id
-    deregistration_delay = 15
-    target_type = "ip"
+  name                 = "${var.env_prefix}-tg-rswebapp"
+  port                 = 3000
+  protocol             = "HTTP"
+  vpc_id               = data.terraform_remote_state.rs_base.outputs.vpc_id
+  deregistration_delay = 15
+  target_type          = "ip"
 
-    health_check {
-        enabled = true
-        interval = 15
-        path = "/index.html"
-        port = "traffic-port"
-        protocol = "HTTP"
-        healthy_threshold = "2"
-        unhealthy_threshold = "2"
-    }
+  health_check {
+    enabled             = true
+    interval            = 15
+    path                = "/index.html"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    healthy_threshold   = "2"
+    unhealthy_threshold = "2"
+  }
 
-    tags = {
-        AppName = var.env_prefix
-    }   
+  tags = {
+    AppName = var.env_prefix
+  }
 }
 
 resource "aws_ecs_service" "ecs-rs" {
@@ -203,7 +228,7 @@ resource "aws_ecs_service" "ecs-rs" {
   cluster         = data.terraform_remote_state.rs_base.outputs.ecs_cluster_id
   task_definition = aws_ecs_task_definition.ecs-taskdef-rs.arn
   desired_count   = 1
-  depends_on      = [ aws_iam_role.rs-iamrole-webapp, aws_lb_listener_rule.albl-webtier-rule ]
+  depends_on      = [aws_iam_role.rs-iamrole-webapp, aws_lb_listener_rule.albl-webtier-rule]
   launch_type     = "FARGATE"
 
   load_balancer {
@@ -213,25 +238,25 @@ resource "aws_ecs_service" "ecs-rs" {
   }
 
   network_configuration {
-      subnets = data.terraform_remote_state.rs_base.outputs.private_subnet_ids
-      security_groups = [ data.terraform_remote_state.rs_base.outputs.server_sg_id ] 
-      assign_public_ip = false
+    subnets          = data.terraform_remote_state.rs_base.outputs.private_subnet_ids
+    security_groups  = [data.terraform_remote_state.rs_base.outputs.server_sg_id]
+    assign_public_ip = true
   }
 
 }
 
 resource "aws_lb_listener_rule" "albl-webtier-rule" {
-    listener_arn = data.terraform_remote_state.rs_base.outputs.alb_listener_arn
-    priority = 99
+  listener_arn = data.terraform_remote_state.rs_base.outputs.alb_listener_arn
+  priority     = 99
 
-    action {
-        type = "forward"
-        target_group_arn = aws_lb_target_group.tg-rswebapp.arn
-    }
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg-rswebapp.arn
+  }
 
-    condition {
-        path_pattern {
-            values = [ "/api/*" ]
-        }
+  condition {
+    path_pattern {
+      values = ["/api/*"]
     }
+  }
 }

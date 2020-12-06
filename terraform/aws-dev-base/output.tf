@@ -1,4 +1,4 @@
-output "sg_rs_server_sg_id" {
+output "server_sg_id" {
     value = aws_security_group.sg-rs-webapp.id
 }
 

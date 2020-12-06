@@ -1,19 +1,19 @@
 variable "env_prefix" {
-    type = string
+  type = string
 }
 
 variable "google_maps_api_key" {
-    type = string
+  type = string
 }
 
 variable "google_auth_client_id" {
-    type = string
+  type = string
 }
 
 variable "google_auth_client_secret" {
-    type = string
+  type = string
 }
 
 variable "jwt_secret" {
-    type = string
+  type = string
 }
