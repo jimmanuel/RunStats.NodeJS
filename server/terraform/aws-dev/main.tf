@@ -211,7 +211,7 @@ resource "aws_lb_target_group" "tg-rswebapp" {
   health_check {
     enabled             = true
     interval            = 15
-    path                = "/index.html"
+    path                = "/api/health"
     port                = "traffic-port"
     protocol            = "HTTP"
     healthy_threshold   = "2"
@@ -259,4 +259,60 @@ resource "aws_lb_listener_rule" "albl-webtier-rule" {
       values = ["/api/*"]
     }
   }
+}
+
+
+resource "aws_ssm_parameter" "ssm-google-maps-key" {
+    name = "/${var.env_prefix}/google-maps-key"
+    description = "google maps api key"
+    type = "String"
+    value = var.google_maps_api_key
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}
+
+resource "aws_ssm_parameter" "ssm-google-auth-client-id" {
+    name = "/${var.env_prefix}/google-auth-client-id"
+    description = "google client id for authentication"
+    type = "SecureString"
+    value = var.google_auth_client_id
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}
+
+resource "aws_ssm_parameter" "ssm-google-auth-client-secret" {
+    name = "/${var.env_prefix}/google-auth-client-secret"
+    description = "google client secret for authentication"
+    type = "SecureString"
+    value = var.google_auth_client_id
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}
+
+resource "aws_ssm_parameter" "ssm-jwt-secret" {
+    name = "/${var.env_prefix}/jwt-secret"
+    description = "secret for signing jwts"
+    type = "SecureString"
+    value = var.jwt_secret
+
+    tags = {
+        AppName = var.env_prefix
+    }
+}
+
+resource "aws_ssm_parameter" "ssm-cookie-domain" {
+    name = "/${var.env_prefix}/cookie-domain"
+    description = "the domain for cookies"
+    type = "String"
+    value = "${var.app_url}.jlabar.us"
+
+    tags = {
+        AppName = var.env_prefix
+    }
 }
