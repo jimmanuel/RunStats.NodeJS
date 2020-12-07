@@ -35,6 +35,26 @@ A few more things of note:
 1. Google OAuth IdP info
 1. Google Maps client info
 1. An ACM Cert
+1. a S3 bucket for terraform state
+
+## Deployment
+### Deploy the Backend
+1. Navigate to the modular tf folder and run tf-apply to deploy the base infrastructure.
+1. TODO: deploy the storage
+1. Navigate to the backend code
+1. publish something to ECR; run the publish-ecr script to do this.  The last step will fail because there isn't an ECS Service deployed yet - it's ok.
+1. Navigate to the terraform folder in the backend and run tf-apply to deploy the backend.
+
+### Deploy the Client
+TODO
+
+# AWS Deploy Steps (Deprecated)
+
+### Prereqs
+1. An ECR repo for docker images
+1. Google OAuth IdP info
+1. Google Maps client info
+1. An ACM Cert
 1. An S3 bucket for lambda build output
 
 ### Initial Deployment
@@ -59,7 +79,7 @@ DB Schema updates are made by making changes to the scripts and then re-publishi
 
 # TODOs
 ### Standard Priority
-- replace the Internet Gateway with a Nat Gateway
+- replace the Internet Gateway with a Nat Gateway (make private subnets)
 - replace the React frontend with an Angular frontend
 - update DB Lambdas to not have passwords in the env vars
 - sanity check and untangle the configuration
