@@ -21,6 +21,12 @@ data "terraform_remote_state" "rs_base" {
   }
 }
 
+data "archive_file" "proxy_zip" {
+  type        = "zip"
+  source_file = "../../src/proxy.js"
+  output_path = "proxy-js.zip"
+}
+
 resource "aws_s3_bucket" "s3_rs_static_web" {
     bucket = "${var.env_prefix}-rs-static-web-content"
     acl = "private"                                                                                                                                                                                                                     
@@ -55,4 +61,43 @@ resource "aws_s3_bucket_object" "s3_obj_health_check" {
   acl    = "private"  # or can be "public-read"
   source = "../../src/health.html"
   etag = filemd5("../../src/health.html")
+}
+
+resource "aws_iam_role" "lambda_proxy_role" {
+  name = "${var.env_prefix}-iam-for-lambda"
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_lambda_function" "test_lambda" {
+  filename      = data.archive_file.proxy_zip.output_path
+  function_name = "${var.env_prefix}-static-proxy"
+  role          = aws_iam_role.lambda_proxy_role.arn
+  handler       = "proxy.handler"
+
+  # The filebase64sha256() function is available in Terraform 0.11.12 and later
+  # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
+  # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
+  source_code_hash = filebase64sha256(data.archive_file.proxy_zip.output_path)
+
+  runtime = "nodejs12.x"
+
+  environment {
+    variables = {
+      BUCKET_NAME = aws_s3_bucket.s3_rs_static_web.bucket
+    }
+  }
 }
