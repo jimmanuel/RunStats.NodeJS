@@ -82,7 +82,7 @@ resource "aws_iam_role" "lambda_proxy_role" {
 EOF
 }
 
-resource "aws_lambda_function" "test_lambda" {
+resource "aws_lambda_function" "func_static_proxy" {
   filename      = data.archive_file.proxy_zip.output_path
   function_name = "${var.env_prefix}-static-proxy"
   role          = aws_iam_role.lambda_proxy_role.arn
@@ -98,6 +98,63 @@ resource "aws_lambda_function" "test_lambda" {
   environment {
     variables = {
       BUCKET_NAME = aws_s3_bucket.s3_rs_static_web.bucket
+    }
+  }
+
+  tags = {
+    AppName = var.env_prefix
+  }
+}
+
+resource "aws_lb_target_group" "tg_rstatic_proxy" {
+  name                 = "${var.env_prefix}-tg-static-proxy"
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = data.terraform_remote_state.rs_base.outputs.vpc_id
+  deregistration_delay = 15
+  target_type          = "lambda"
+
+  health_check {
+    enabled             = true
+    interval            = 300
+    path                = "/health.html"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    healthy_threshold   = "2"
+    unhealthy_threshold = "2"
+  }
+
+  tags = {
+    AppName = var.env_prefix
+  }
+}
+
+resource "aws_lambda_permission" "with_lb" {
+  statement_id  = "AllowExecutionFromlb"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.func_static_proxy.arn
+  principal     = "elasticloadbalancing.amazonaws.com"
+  source_arn    = aws_lb_target_group.tg_rstatic_proxy.arn
+}
+
+resource "aws_lb_target_group_attachment" "tg_proxy_attachment" {
+  target_group_arn = aws_lb_target_group.tg_rstatic_proxy.arn
+  target_id        = aws_lambda_function.func_static_proxy.arn
+  depends_on       = [aws_lambda_permission.with_lb]
+}
+
+resource "aws_lb_listener_rule" "albl_static_rule" {
+  listener_arn = data.terraform_remote_state.rs_base.outputs.alb_listener_arn
+  priority     = 999
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg_rstatic_proxy.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/*"]
     }
   }
 }
