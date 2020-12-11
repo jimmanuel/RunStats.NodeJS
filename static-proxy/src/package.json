@@ -10,9 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "s3proxy": "^1.4.1",
+    "s3-proxy": "^1.2.1",
     "serverless-http": "^2.6.0"
-  },
-  "type": "module"
-  
+  }
 }

@@ -86,7 +86,7 @@ resource "aws_lambda_function" "func_static_proxy" {
   filename      = data.archive_file.proxy_zip.output_path
   function_name = "${var.env_prefix}-static-proxy"
   role          = aws_iam_role.lambda_proxy_role.arn
-  handler       = "src/proxy.handler"
+  handler       = "proxy.handler"
 
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
@@ -172,7 +172,7 @@ resource "aws_iam_policy" "policy_proxy_to_s3" {
         "s3:Get*"
       ],
       "Effect": "Allow",
-      "Resource": "${aws_s3_bucket.s3_rs_static_web.arn}"
+      "Resource": "${aws_s3_bucket.s3_rs_static_web.arn}/*"
     }
   ]
 }
