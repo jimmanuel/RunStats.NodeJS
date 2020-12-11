@@ -23,7 +23,7 @@ data "terraform_remote_state" "rs_base" {
 
 data "archive_file" "proxy_zip" {
   type        = "zip"
-  source_file = "../../src/proxy.js"
+  source_dir  = "../../src"
   output_path = "proxy-js.zip"
 }
 
@@ -86,7 +86,7 @@ resource "aws_lambda_function" "func_static_proxy" {
   filename      = data.archive_file.proxy_zip.output_path
   function_name = "${var.env_prefix}-static-proxy"
   role          = aws_iam_role.lambda_proxy_role.arn
-  handler       = "proxy.handler"
+  handler       = "src/proxy.handler"
 
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
@@ -157,4 +157,34 @@ resource "aws_lb_listener_rule" "albl_static_rule" {
       values = ["/*"]
     }
   }
+}
+
+resource "aws_iam_policy" "policy_proxy_to_s3" {
+  name        = "${var.env_prefix}-static-web-s3-access"
+  description = "A test policy"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "s3:Get*"
+      ],
+      "Effect": "Allow",
+      "Resource": "${aws_s3_bucket.s3_rs_static_web.arn}"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "proxy_cw_attachment" {
+  role       = aws_iam_role.lambda_proxy_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy_attachment" "proxy_s3_attachment" {
+  role       = aws_iam_role.lambda_proxy_role.name
+  policy_arn = aws_iam_policy.policy_proxy_to_s3.arn
 }
