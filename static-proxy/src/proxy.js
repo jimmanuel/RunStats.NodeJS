@@ -5,7 +5,7 @@ var s3Proxy = require('s3-proxy');
 const app = express();
 app.get('/*', s3Proxy({
     bucket: process.env.BUCKET_NAME,
-    defaultKey: 'health.html'
+    defaultKey: 'index.html'
 }));
 
 module.exports.handler = serverless(app);

@@ -23,7 +23,7 @@ resource "aws_lb_listener" "albl-rswebtier" {
 
         fixed_response {
             content_type = "text/plain"
-            message_body = "Hello there."
+            message_body = "Hello there from the default Load Balancer Respose."
             status_code  = "200"
         }
     }

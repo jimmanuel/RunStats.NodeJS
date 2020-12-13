@@ -57,10 +57,12 @@ resource "aws_s3_bucket_public_access_block" "s3_rs_static_web_block" {
 resource "aws_s3_bucket_object" "s3_obj_health_check" {
   bucket = aws_s3_bucket.s3_rs_static_web.id
 
-  key    = "health.html"
+  key    = "index.html"
   acl    = "private"  # or can be "public-read"
-  source = "../../src/health.html"
-  etag = filemd5("../../src/health.html")
+  source = "../../src/index.html"
+  etag = filemd5("../../src/index.html")
+  content_type = "text/html"
+  content_disposition = "inline"
 }
 
 resource "aws_iam_role" "lambda_proxy_role" {
