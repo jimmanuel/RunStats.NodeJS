@@ -39,42 +39,22 @@ A few more things of note:
 
 ## Deployment
 ### Deploy the Backend
-1. Navigate to the modular tf folder and run tf-apply to deploy the base infrastructure.
+1. Navigate to the modular tf folder and run app-deploy.sh to deploy the base infrastructure.
 1. TODO: deploy the storage
 1. Navigate to the backend code
 1. publish something to ECR; run the publish-ecr script to do this.  The last step will fail because there isn't an ECS Service deployed yet - it's ok.
-1. Navigate to the terraform folder in the backend and run tf-apply to deploy the backend.
+1. Navigate to the terraform folder in the backend and run app-deploy.sh to deploy the backend.
 
 ### Deploy the Client
-TODO
-
-# AWS Deploy Steps (Deprecated)
-
-### Prereqs
-1. An ECR repo for docker images
-1. Google OAuth IdP info
-1. Google Maps client info
-1. An ACM Cert
-1. An S3 bucket for lambda build output
-
-### Initial Deployment
-1. Compile the app and deploy the artifacts to ECR and the S3 drop folder.
-1. Run the terraform scripts; you'll need a few inputs that I'm not going to describe here because I just plain don't feel like it right now
-1. The tf scripts will leave you with a few things
-    1. Route53 routes to
-    1. An ALB with
-    1. A Target Group that points to 
-    1. An ECS Fargate Service with
-    1. A Task Definition that pulls the latest image from the ECR repo
-    1. Also, a few Lambda functions for database setup along with 
-    1. An RDS instance of PostgreSQL to supplement
-    1. An S3 bucket for object storage
-1. To initialize the database, go find the lambda that's named "setup" or "create" or whatever i called it and run it
-1. You're done; you should be able to navigate to the app with a browser now. 
+1. Navigate to the static proxy terraform folder and run app-deploy.sh; this will make an S3 bucket hooked up to the ALB via alambda to serve static content at our desired URL
+1. Navigate to the client application folder and run app-deploy.sh; this populates the bucket with the static content (client application).
 
 ### Code Updates
-You can update the application layer by making changes, recompiling and then republishing to ECR.  The ECS task is updated with the latest image simply by killing the existing task.  When a new one starts then it'll pull the latest image.
+Backend Server: run publish-ecr.sh to rebuild and publish a new docker image to ECR, and then force the ECS Service to update tasks.
 
+Client Application: run app-deploy.sh from the client folder to re-sync the compiled client to the S3 bucket that stores the static content.
+
+Coming Soon:
 DB Schema updates are made by making changes to the scripts and then re-publishing the Lambda source to S3.  Then you can go to the Lambda console, update the "redeploy" function from the source bucket and then invoke that function.  It will drop and recreate the schema using the latest scripts.  You may also want to delete the files from the S3 bucket that relate to the metadata in RDS.
 
 # TODOs
@@ -83,10 +63,10 @@ DB Schema updates are made by making changes to the scripts and then re-publishi
 - replace the React frontend with an Angular frontend
 - update DB Lambdas to not have passwords in the env vars
 - sanity check and untangle the configuration
+- terraform the DB module so that we have persistent storage again
 
 ### Gold Plating
 - update TF to support easily multiple environments
-- split the static content from the service layer
 
 ### Gold Plated Cadillac
 - support Azure deployments as well as AWS
