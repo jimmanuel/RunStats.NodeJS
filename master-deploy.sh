@@ -12,6 +12,6 @@ cd static-proxy/terraform/aws-dev
 ./app-deploy.sh
 cd -
 
-cd client/terraform/aws-dev
+cd client-ng/terraform/aws-dev
 ./app-deploy.sh
 cd -
