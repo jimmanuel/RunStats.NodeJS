@@ -1,16 +1,9 @@
 node_modules
-app
 **/.env
-server/rs.app.zip
-database/rs.db.zip
 client/build
-publish.sh
-server/coverage/*
-server/npm-debug.log
 **/.terraform
 **/.tfvars
 **/terraform.tfstate
 **/terraform.tfstate.backup
 **/.terraform*
 **/*.tfvars
-database/resetLocalDb.sh
